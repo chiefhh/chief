@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useSession, signOut } from "next-auth/react";
 
 /* ─── animation helpers ─────────────────────────── */
 const fadeUp = {
@@ -59,6 +60,8 @@ function LangToggle() {
 /* ─── Nav ────────────────────────────────────────── */
 function Nav() {
   const { t } = useLanguage();
+  const { data: session, status } = useSession();
+
   return (
     <motion.nav
       initial={{ opacity: 0, y: -12 }}
@@ -84,9 +87,32 @@ function Nav() {
 
       <div className="flex items-center gap-4">
         <LangToggle />
-        <Link href="/join">
-          <Button size="sm">{t.nav.cta}</Button>
-        </Link>
+        {status === "authenticated" && session?.user ? (
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              {session.user.image ? (
+                <img src={session.user.image} alt="" className="w-7 h-7 rounded-full" />
+              ) : (
+                <div className="w-7 h-7 rounded-full bg-[#B8944F]/20 flex items-center justify-center font-body text-xs text-[#B8944F] font-medium">
+                  {session.user.name?.[0] ?? "U"}
+                </div>
+              )}
+              <span className="font-body text-xs text-[#0A0A0A] hidden md:block">
+                {session.user.name?.split(" ")[0]}
+              </span>
+            </div>
+            <button
+              onClick={() => signOut({ callbackUrl: "/" })}
+              className="font-body text-xs text-[#555555] hover:text-[#0A0A0A] transition-colors cursor-pointer"
+            >
+              Sign out
+            </button>
+          </div>
+        ) : (
+          <Link href="/join">
+            <Button size="sm">{t.nav.cta}</Button>
+          </Link>
+        )}
       </div>
     </motion.nav>
   );
