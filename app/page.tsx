@@ -114,7 +114,7 @@ function Hero() {
         }} />
 
       <motion.div style={{ y, opacity }}
-        className="relative z-10 flex flex-col items-center text-center px-6 max-w-5xl mx-auto">
+        className="relative z-10 flex flex-col items-center text-center px-6 max-w-5xl mx-auto pt-24 pb-16">
 
         <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0}
           className="mb-8 inline-flex items-center gap-3">
