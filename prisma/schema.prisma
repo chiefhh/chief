@@ -1,0 +1,240 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  image         String?
+  emailVerified DateTime?
+  accounts      Account[]
+  sessions      Session[]
+  profile       Profile?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model InvitationCode {
+  id        String    @id @default(cuid())
+  code      String    @unique
+  usedBy    String?
+  createdBy String?
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  isActive  Boolean   @default(true)
+
+}
+
+model Profile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  slug         String      @unique
+  globalNumber Int         @unique
+  displayName  String
+  title        String
+  company      String
+  companySize  CompanySize @default(UNKNOWN)
+
+  headline     String?
+  bio          String?  @db.Text
+  industries   String[]
+  socialLinks  Json?
+  achievements Json?
+
+  decisionCases DecisionCase[]
+  insights      Insight[]
+
+  verified       Boolean        @default(false)
+  verifiedAt     DateTime?
+  linkedinId     String?
+  openToOpps     Boolean        @default(false)
+  contactPrivacy ContactPrivacy @default(APPLICATION)
+
+  viewCount       Int @default(0)
+  connectionCount Int @default(0)
+
+  walletPassUrl String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  endorsements        Endorsement[]       @relation("endorsed")
+  givenEndorsements   Endorsement[]       @relation("endorser")
+  connectionsReceived ConnectionRequest[] @relation("receiver")
+  connectionsSent     ConnectionRequest[] @relation("sender")
+  profileViews        ProfileView[]
+
+}
+
+enum CompanySize {
+  UNKNOWN
+  SEED
+  SERIES_A_B
+  SERIES_C_PLUS
+  PUBLIC
+  ENTERPRISE
+  FORTUNE_500
+
+}
+
+enum ContactPrivacy {
+  PUBLIC
+  APPLICATION
+  CHIEF_ONLY
+
+}
+
+model DecisionCase {
+  id        String   @id @default(cuid())
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  template   CaseTemplate
+  title      String
+  background String       @db.Text
+  conflict   String       @db.Text
+  decision   String       @db.Text
+  outcome    String       @db.Text
+  tags       String[]
+
+  isPublic  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+}
+
+enum CaseTemplate {
+  CRISIS_MANAGEMENT
+  ORG_RESTRUCTURING
+  STRATEGIC_PIVOT
+  SCALING_CHALLENGE
+  PRODUCT_LAUNCH
+  TALENT_STRATEGY
+  FUNDRAISING
+  TECHNOLOGY_BET
+  MARKET_ENTRY
+  CUSTOM
+
+}
+
+model Insight {
+  id        String  @id @default(cuid())
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  title     String
+  content   String        @db.Text
+  summary   String?
+  source    InsightSource @default(MANUAL)
+  sourceUrl String?
+  isPinned  Boolean       @default(false)
+  isPublic  Boolean       @default(true)
+  isDraft   Boolean       @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+}
+
+enum InsightSource {
+  MANUAL
+  AI_INTERVIEW
+  LINKEDIN_SYNC
+  SHADOW_WRITER
+
+}
+
+model Endorsement {
+  id         String  @id @default(cuid())
+  profileId  String
+  profile    Profile @relation("endorsed", fields: [profileId], references: [id], onDelete: Cascade)
+  endorserId String
+  endorser   Profile @relation("endorser", fields: [endorserId], references: [id])
+
+  relationship String
+  content      String  @db.Text
+  isVerified   Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+}
+
+model ConnectionRequest {
+  id         String  @id @default(cuid())
+  senderId   String
+  sender     Profile @relation("sender", fields: [senderId], references: [id])
+  receiverId String
+  receiver   Profile @relation("receiver", fields: [receiverId], references: [id])
+
+  message     String?       @db.Text
+  status      RequestStatus @default(PENDING)
+  createdAt   DateTime      @default(now())
+  respondedAt DateTime?
+
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+
+}
+
+model ProfileView {
+  id        String  @id @default(cuid())
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  viewerIp String?
+  country  String?
+  device   String?
+  referrer String?
+
+  createdAt DateTime @default(now())
+
+}

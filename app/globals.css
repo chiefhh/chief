@@ -1,26 +1,63 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ──────────────────────────────────────────────
+   Chief.me Design System — Tailwind v4
+   Luxury / Refined aesthetic for VP+ executives
+   ────────────────────────────────────────────── */
+
+@theme {
+  /* Brand Colors */
+  --color-chief-gold:       #B8944F;
+  --color-chief-gold-light: #E8D5A0;
+  --color-chief-dark:       #0A0A0A;
+  --color-chief-cream:      #F5F0E8;
+  --color-chief-mist:       #E8E2D8;
+  --color-chief-slate:      #555555;
+  --color-chief-white:      #FEFCF7;
+
+  /* Typography */
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body:    "DM Sans", "Helvetica Neue", sans-serif;
+
+  /* Border radius */
+  --radius-card: 18px;
+  --radius-pill: 9999px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  html {
+    background-color: var(--color-chief-white);
+    color: var(--color-chief-dark);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background-color: var(--color-chief-white);
+    color: var(--color-chief-dark);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+
+  ::selection {
+    background: var(--color-chief-gold-light);
+    color: var(--color-chief-dark);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .font-display   { font-family: var(--font-display); }
+  .font-body      { font-family: var(--font-body); }
+
+  .gold-line {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #B8944F 40%, #E8D5A0 60%, transparent);
+  }
 }
