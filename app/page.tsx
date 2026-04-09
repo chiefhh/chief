@@ -89,18 +89,18 @@ function Nav() {
         <LangToggle />
         {status === "authenticated" && session?.user ? (
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
+            <Link href="/dashboard" className="flex items-center gap-2 group">
               {session.user.image ? (
-                <img src={session.user.image} alt="" className="w-7 h-7 rounded-full" />
+                <img src={session.user.image} alt="" className="w-7 h-7 rounded-full ring-1 ring-transparent group-hover:ring-[#B8944F]/50 transition-all" />
               ) : (
                 <div className="w-7 h-7 rounded-full bg-[#B8944F]/20 flex items-center justify-center font-body text-xs text-[#B8944F] font-medium">
                   {session.user.name?.[0] ?? "U"}
                 </div>
               )}
-              <span className="font-body text-xs text-[#0A0A0A] hidden md:block">
+              <span className="font-body text-xs text-[#0A0A0A] hidden md:block group-hover:text-[#B8944F] transition-colors">
                 {session.user.name?.split(" ")[0]}
               </span>
-            </div>
+            </Link>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
               className="font-body text-xs text-[#555555] hover:text-[#0A0A0A] transition-colors cursor-pointer"
