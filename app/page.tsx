@@ -113,6 +113,7 @@ function Nav() {
             <Button size="sm">{t.nav.cta}</Button>
           </Link>
         )}
+
       </div>
     </motion.nav>
   );
@@ -121,6 +122,7 @@ function Nav() {
 /* ─── Hero ───────────────────────────────────────── */
 function Hero() {
   const { t } = useLanguage();
+  const { data: session } = useSession();
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const y       = useTransform(scrollYProgress, [0, 1], [0, 80]);
@@ -169,9 +171,9 @@ function Hero() {
 
         <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={3}
           className="flex flex-col sm:flex-row gap-4 items-center">
-          <Link href="/join">
+          <Link href={session ? "/dashboard" : "/join"}>
             <Button size="lg" className="group">
-              {t.hero.ctaPrimary}
+              {session ? "Go to Dashboard" : t.hero.ctaPrimary}
               <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Button>
           </Link>
@@ -451,6 +453,7 @@ function MembersWall() {
 /* ─── Final CTA ──────────────────────────────────── */
 function FinalCTA() {
   const { t } = useLanguage();
+  const { data: session } = useSession();
   return (
     <section className="relative bg-[#F5F0E8] py-32 px-6 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none"
@@ -478,9 +481,9 @@ function FinalCTA() {
             {t.cta.sub}
           </motion.p>
           <motion.div variants={fadeUp} className="flex justify-center">
-            <Link href="/join">
+            <Link href={session ? "/dashboard" : "/join"}>
               <Button size="lg" className="group">
-                {t.cta.button}
+                {session ? "Go to Dashboard" : t.cta.button}
                 <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>

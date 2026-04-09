@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Suspense } from "react";
@@ -46,10 +46,19 @@ function JoinForm() {
   const { lang } = useLanguage();
   const t = copy[lang];
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const { status } = useSession();
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const [verified, setVerified] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // Already logged in → go to dashboard
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace("/dashboard");
+    }
+  }, [status, router]);
 
   // Show NextAuth error if redirected back with ?error=
   useEffect(() => {
