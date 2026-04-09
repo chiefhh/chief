@@ -59,7 +59,19 @@ export default function JoinPage() {
 
   async function handleGoogle() {
     setLoading(true);
-    await signIn("google", { callbackUrl: "/onboarding" });
+    setError("");
+    try {
+      const result = await signIn("google", { callbackUrl: "/onboarding", redirect: false });
+      if (result?.error) {
+        setError("Login failed: " + result.error);
+        setLoading(false);
+      } else if (result?.url) {
+        window.location.href = result.url;
+      }
+    } catch (e) {
+      setError("Unexpected error. Please try again.");
+      setLoading(false);
+    }
   }
 
   return (
