@@ -18,6 +18,7 @@ export const translations = {
       headline2: "a better address.",
       sub: "The exclusive platform for VP-level and above. Not a résumé. Not a feed. Your permanent digital presence — refined, private, and entirely yours.",
       ctaPrimary: "Claim your page",
+      ctaDashboard: "Go to Dashboard",
       ctaSecondary: "View members",
       trust1: "$0 — Forever Free",
       trust2: "1,000 Founding Seats",
@@ -146,6 +147,7 @@ export const translations = {
       headline2: "Yours forever.",
       sub: "Stop letting job boards and social feeds define your executive presence. Chief.me is the address your name deserves.",
       button: "Claim your doorplate",
+      buttonDashboard: "Go to Dashboard",
       fine: "Forever Free · VP+ Only · Invitation Required",
     },
 
@@ -186,6 +188,7 @@ export const translations = {
       headline2: "值得更好的地址。",
       sub: "专为 VP 及以上级别高管打造的专属平台。不是简历，不是信息流。属于你的永久数字门牌 — 克制、私密、完全由你掌控。",
       ctaPrimary: "认领我的页面",
+      ctaDashboard: "进入控制台",
       ctaSecondary: "查看成员",
       trust1: "$0 — 永久免费",
       trust2: "1,000 个创始席位",
@@ -314,6 +317,7 @@ export const translations = {
       headline2: "永久属于你。",
       sub: "不要再让招聘网站和社交信息流定义你的高管形象。Chief.me 是你的名字应得的地址。",
       button: "认领我的数字门牌",
+      buttonDashboard: "进入控制台",
       fine: "永久免费 · 仅限 VP+ · 需要邀请码",
     },
 

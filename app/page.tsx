@@ -173,7 +173,7 @@ function Hero() {
           className="flex flex-col sm:flex-row gap-4 items-center">
           <Link href={session ? "/dashboard" : "/join"}>
             <Button size="lg" className="group">
-              {session ? "Go to Dashboard" : t.hero.ctaPrimary}
+              {session ? t.hero.ctaDashboard : t.hero.ctaPrimary}
               <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Button>
           </Link>
@@ -483,7 +483,7 @@ function FinalCTA() {
           <motion.div variants={fadeUp} className="flex justify-center">
             <Link href={session ? "/dashboard" : "/join"}>
               <Button size="lg" className="group">
-                {session ? "Go to Dashboard" : t.cta.button}
+                {session ? t.cta.buttonDashboard : t.cta.button}
                 <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>

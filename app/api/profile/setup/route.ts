@@ -75,6 +75,8 @@ export async function GET() {
       company: true,
       headline: true,
       bio: true,
+      viewCount: true,
+      connectionCount: true,
     },
   });
 
