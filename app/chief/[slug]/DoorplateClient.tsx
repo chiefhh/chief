@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
@@ -227,11 +227,11 @@ function ConnectModal({
 // ─── QR Modal ─────────────────────────────────────────────────────────────────
 
 function QRModal({ url, onClose }: { url: string; onClose: () => void }) {
-  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+  const [qrDataUrl, setQrDataUrl] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
   // Generate QR code client-side
-  useState(() => {
+  useEffect(() => {
     import("qrcode").then((QRCode) => {
       QRCode.toDataURL(url, {
         color: { dark: "#B8944F", light: "#0A0A0A" },
@@ -244,7 +244,7 @@ function QRModal({ url, onClose }: { url: string; onClose: () => void }) {
         })
         .catch(() => setLoading(false));
     });
-  });
+  }, [url]);
 
   return (
     <div
