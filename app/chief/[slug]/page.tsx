@@ -2,22 +2,52 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Shield, Check } from "lucide-react";
+import { Check, Shield } from "lucide-react";
+import DoorplateClient, { ShareToolbar } from "./DoorplateClient";
+
+// ─── Types ─────────────────────────────────────────────────────────────────────
 
 type Props = { params: Promise<{ slug: string }> };
+
+// ─── Company size labels ────────────────────────────────────────────────────────
+
+const COMPANY_SIZE_LABELS: Record<string, string> = {
+  SEED: "Seed Stage",
+  SERIES_A_B: "Series A/B",
+  SERIES_C_PLUS: "Series C+",
+  PUBLIC: "Public Co",
+  ENTERPRISE: "Enterprise",
+  FORTUNE_500: "Fortune 500",
+};
+
+// ─── SEO Metadata ───────────────────────────────────────────────────────────────
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const profile = await prisma.profile.findUnique({
     where: { slug },
-    select: { displayName: true, title: true, company: true, headline: true },
+    select: {
+      displayName: true,
+      title: true,
+      company: true,
+      headline: true,
+      bio: true,
+    },
   });
   if (!profile) return { title: "Not Found" };
   return {
-    title: `${profile.displayName} — chief.me`,
-    description: profile.headline ?? `${profile.title} at ${profile.company}`,
+    title: `${profile.displayName} | ${profile.title} @ ${profile.company} | Chief.me`,
+    description:
+      profile.headline ?? profile.bio?.slice(0, 160) ?? `${profile.title} at ${profile.company}`,
+    openGraph: {
+      title: `${profile.displayName} — ${profile.title} @ ${profile.company}`,
+      images: [`/api/og/${slug}`],
+      type: "profile",
+    },
   };
 }
+
+// ─── Page ───────────────────────────────────────────────────────────────────────
 
 export default async function ProfilePage({ params }: Props) {
   const { slug } = await params;
@@ -25,20 +55,60 @@ export default async function ProfilePage({ params }: Props) {
   const profile = await prisma.profile.findUnique({
     where: { slug },
     select: {
+      id: true,
       slug: true,
       globalNumber: true,
       displayName: true,
       title: true,
       company: true,
+      companySize: true,
       headline: true,
       bio: true,
       industries: true,
+      socialLinks: true,
+      achievements: true,
       verified: true,
-      user: { select: { image: true, name: true } },
+      viewCount: true,
+      connectionCount: true,
+      user: { select: { image: true } },
+      decisionCases: {
+        where: { isPublic: true },
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          template: true,
+          title: true,
+          outcome: true,
+          tags: true,
+        },
+      },
+      insights: {
+        where: { isPublic: true, isDraft: false },
+        orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
+        select: {
+          id: true,
+          title: true,
+          content: true,
+          summary: true,
+          createdAt: true,
+        },
+      },
     },
   });
 
   if (!profile) notFound();
+
+  // Parse JSON fields
+  const socialLinks =
+    profile.socialLinks &&
+    typeof profile.socialLinks === "object" &&
+    !Array.isArray(profile.socialLinks)
+      ? (profile.socialLinks as { linkedin?: string; twitter?: string; website?: string })
+      : {};
+
+  const achievements: string[] = Array.isArray(profile.achievements)
+    ? (profile.achievements as string[])
+    : [];
 
   const initials = profile.displayName
     .split(" ")
@@ -47,141 +117,242 @@ export default async function ProfilePage({ params }: Props) {
     .slice(0, 2)
     .toUpperCase();
 
+  const companySizeLabel = COMPANY_SIZE_LABELS[profile.companySize] ?? null;
+
+  // JSON-LD
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: profile.displayName,
+    jobTitle: profile.title,
+    worksFor: { "@type": "Organization", name: profile.company },
+    url: `https://www.chief.me/chief/${slug}`,
+  };
+
+  // Serialize insights dates for client
+  const insightsForClient = profile.insights.map((i) => ({
+    ...i,
+    createdAt: i.createdAt.toISOString(),
+  }));
+
   return (
-    <main className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center px-6 py-16">
-      <div
-        className="fixed inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse 60% 50% at 50% 30%, rgba(184,148,79,0.07) 0%, transparent 70%)",
-        }}
+    <>
+      {/* JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="relative w-full max-w-md">
-        {/* Doorplate card */}
+      <main
+        className="min-h-screen"
+        style={{ background: "#0A0A0A" }}
+      >
+        {/* Ambient glow */}
         <div
-          className="rounded-[24px] overflow-hidden"
+          className="fixed inset-0 pointer-events-none"
           style={{
-            background: "#0F0F0F",
-            border: "1px solid rgba(184,148,79,0.2)",
-            boxShadow: "0 32px 80px rgba(0,0,0,0.4)",
+            background:
+              "radial-gradient(ellipse 60% 50% at 50% 20%, rgba(184,148,79,0.06) 0%, transparent 70%)",
           }}
-        >
-          {/* Gold line top */}
+        />
+
+        <div className="relative w-full max-w-xl mx-auto px-4 pb-16">
+          {/* ── DARK HEADER CARD ── */}
           <div
-            className="h-0.5 w-full"
+            className="rounded-b-[24px] overflow-hidden"
             style={{
-              background:
-                "linear-gradient(90deg, transparent, #B8944F 30%, #E8D5A0 50%, #B8944F 70%, transparent)",
+              background: "#0F0F0F",
+              border: "1px solid rgba(184,148,79,0.2)",
+              borderTop: "none",
+              boxShadow: "0 24px 60px rgba(0,0,0,0.4)",
             }}
-          />
+          >
+            {/* 3px gold top line */}
+            <div
+              style={{
+                height: "3px",
+                background:
+                  "linear-gradient(90deg, transparent, #B8944F 30%, #E8D5A0 50%, #B8944F 70%, transparent)",
+              }}
+            />
 
-          <div className="p-8">
-            {/* Number */}
-            <div className="flex items-center justify-between mb-6">
-              <span className="font-body text-[10px] tracking-[0.3em] text-[#B8944F] uppercase">
-                Founding Member
-              </span>
-              <span className="font-body text-[10px] tracking-[0.3em] text-[#B8944F]">
-                No. {String(profile.globalNumber).padStart(3, "0")}
-              </span>
-            </div>
+            <div className="px-8 pt-6 pb-7">
+              {/* Founding member + number row */}
+              <div className="flex items-center justify-between mb-6">
+                <span
+                  className="font-body text-[10px] tracking-[0.3em] uppercase"
+                  style={{ color: "#B8944F" }}
+                >
+                  Founding Member
+                </span>
+                <span
+                  className="font-body text-[10px] tracking-[0.3em]"
+                  style={{ color: "#B8944F" }}
+                >
+                  No. {String(profile.globalNumber).padStart(3, "0")}
+                </span>
+              </div>
 
-            {/* Avatar + name */}
-            <div className="flex items-start gap-4 mb-6">
-              {profile.user.image ? (
-                <img
-                  src={profile.user.image}
-                  alt={profile.displayName}
-                  className="w-16 h-16 rounded-full ring-2 ring-[#B8944F]/20"
-                />
-              ) : (
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#B8944F]/40 to-[#E8D5A0]/20 flex items-center justify-center font-display font-bold text-[#B8944F] text-2xl flex-shrink-0">
-                  {initials}
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <h1 className="font-display text-2xl font-bold text-[#FEFCF7] leading-tight">
-                    {profile.displayName}
-                  </h1>
-                  {profile.verified && (
-                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-[#B8944F]/20 flex items-center justify-center">
-                      <Check className="w-3 h-3 text-[#B8944F]" />
+              {/* Avatar + name + title */}
+              <div className="flex items-start gap-4 mb-5">
+                {profile.user.image ? (
+                  <img
+                    src={profile.user.image}
+                    alt={profile.displayName}
+                    width={72}
+                    height={72}
+                    className="rounded-full flex-shrink-0"
+                    style={{
+                      width: 72,
+                      height: 72,
+                      objectFit: "cover",
+                      boxShadow: "0 0 0 2px rgba(184,148,79,0.3)",
+                    }}
+                  />
+                ) : (
+                  <div
+                    className="flex-shrink-0 rounded-full flex items-center justify-center font-display font-bold text-2xl"
+                    style={{
+                      width: 72,
+                      height: 72,
+                      background:
+                        "linear-gradient(135deg, rgba(184,148,79,0.35) 0%, rgba(232,213,160,0.15) 100%)",
+                      color: "#B8944F",
+                      boxShadow: "0 0 0 2px rgba(184,148,79,0.2)",
+                    }}
+                  >
+                    {initials}
+                  </div>
+                )}
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                    <h1
+                      className="font-display text-2xl font-bold leading-tight"
+                      style={{ color: "#FEFCF7" }}
+                    >
+                      {profile.displayName}
+                    </h1>
+                    {profile.verified && (
+                      <span
+                        className="flex-shrink-0 flex items-center gap-1 px-2 py-0.5 rounded-full font-body text-[10px] tracking-widest uppercase"
+                        style={{
+                          background: "rgba(184,148,79,0.15)",
+                          border: "1px solid rgba(184,148,79,0.3)",
+                          color: "#B8944F",
+                        }}
+                      >
+                        <Check className="w-2.5 h-2.5" />
+                        Verified
+                      </span>
+                    )}
+                  </div>
+                  <p className="font-body text-sm" style={{ color: "rgba(232,226,216,0.7)" }}>
+                    {profile.title}
+                    {profile.company && (
+                      <span style={{ color: "rgba(232,226,216,0.4)" }}>
+                        {" · "}
+                        {profile.company}
+                      </span>
+                    )}
+                  </p>
+
+                  {/* Company size badge */}
+                  {companySizeLabel && (
+                    <span
+                      className="inline-block mt-1.5 font-body text-[10px] tracking-widest uppercase px-2.5 py-0.5 rounded-full"
+                      style={{
+                        background: "rgba(184,148,79,0.08)",
+                        border: "1px solid rgba(184,148,79,0.18)",
+                        color: "rgba(184,148,79,0.7)",
+                      }}
+                    >
+                      {companySizeLabel}
                     </span>
                   )}
                 </div>
-                <p className="font-body text-[#E8E2D8]/70 text-sm">
-                  {profile.title}
-                </p>
-                <p className="font-body text-[#555555] text-sm">
-                  {profile.company}
-                </p>
               </div>
+
+              {/* Industry tags */}
+              {profile.industries.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {profile.industries.map((ind) => (
+                    <span
+                      key={ind}
+                      className="font-body text-[10px] tracking-widest uppercase px-2.5 py-1 rounded-full"
+                      style={{
+                        background: "rgba(184,148,79,0.08)",
+                        border: "1px solid rgba(184,148,79,0.15)",
+                        color: "#B8944F",
+                      }}
+                    >
+                      {ind}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
-
-            {/* Tags */}
-            {profile.industries.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-5">
-                {profile.industries.map((ind) => (
-                  <span
-                    key={ind}
-                    className="font-body text-[10px] tracking-widest bg-[#B8944F]/10 text-[#B8944F] px-2.5 py-1 rounded-full"
-                  >
-                    {ind}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {/* Headline */}
-            {profile.headline && (
-              <p className="font-body text-[#E8E2D8]/80 text-sm leading-relaxed italic mb-5">
-                &ldquo;{profile.headline}&rdquo;
-              </p>
-            )}
-
-            {/* Bio */}
-            {profile.bio && (
-              <p className="font-body text-[#555555] text-sm leading-relaxed mb-5">
-                {profile.bio}
-              </p>
-            )}
           </div>
 
-          {/* Gold line bottom */}
-          <div
-            className="h-0.5 w-full"
-            style={{
-              background:
-                "linear-gradient(90deg, transparent, #B8944F 30%, #E8D5A0 50%, #B8944F 70%, transparent)",
-            }}
-          />
+          {/* ── MAIN CONTENT ── */}
+          <div className="mt-6 space-y-6">
+            <DoorplateClient
+              slug={profile.slug}
+              profileId={profile.id}
+              displayName={profile.displayName}
+              title={profile.title}
+              company={profile.company}
+              headline={profile.headline}
+              bio={profile.bio}
+              achievements={achievements}
+              socialLinks={socialLinks}
+              cases={profile.decisionCases}
+              insights={insightsForClient}
+              viewCount={profile.viewCount}
+              connectionCount={profile.connectionCount}
+            />
+          </div>
 
-          <div className="px-8 py-4 flex items-center justify-between">
-            <span className="font-body text-[10px] tracking-widest text-[#555555]">
-              chief.me/{profile.slug}
+          {/* ── SHARE TOOLBAR ── */}
+          <div className="mt-8 flex items-center gap-3 flex-wrap">
+            <span
+              className="font-body text-[10px] tracking-widest uppercase mr-1"
+              style={{ color: "rgba(184,148,79,0.5)" }}
+            >
+              Share
             </span>
-            <div className="flex items-center gap-1.5 font-body text-[10px] text-[#555555]">
-              <Shield className="w-3 h-3 text-[#B8944F]" />
-              VP+ Verified
+            <ShareToolbar
+              slug={profile.slug}
+              name={profile.displayName}
+              title={profile.title}
+              company={profile.company}
+            />
+          </div>
+
+          {/* ── FOOTER BAR ── */}
+          <div
+            className="mt-8 flex items-center justify-between"
+            style={{ borderTop: "1px solid rgba(184,148,79,0.1)", paddingTop: "16px" }}
+          >
+            <Link
+              href="/"
+              className="font-body text-xs transition-colors"
+              style={{ color: "rgba(184,148,79,0.6)" }}
+            >
+              chief.me/{profile.slug}
+            </Link>
+            <div className="flex items-center gap-1.5">
+              <Shield className="w-3 h-3" style={{ color: "#B8944F" }} />
+              <span
+                className="font-body text-[10px] tracking-widest"
+                style={{ color: "rgba(232,226,216,0.3)" }}
+              >
+                VP+ Network
+              </span>
             </div>
           </div>
         </div>
-
-        {/* Footer */}
-        <div className="text-center mt-6">
-          <Link
-            href="/"
-            className="font-display text-sm font-bold text-[#FEFCF7]/40 hover:text-[#B8944F] transition-colors"
-          >
-            chief<span className="text-[#B8944F]/60">.me</span>
-          </Link>
-          <p className="font-body text-[#555555]/50 text-[10px] mt-1 tracking-wide">
-            The digital doorplate for VP+ executives
-          </p>
-        </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }
