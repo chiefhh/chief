@@ -31,6 +31,7 @@ export default function OnboardingPage() {
   const [slugError, setSlugError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [generatingBio, setGeneratingBio] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") router.replace("/join");
@@ -52,6 +53,30 @@ export default function OnboardingPage() {
       setSlugEdited(true);
       setSlugError("");
     }
+  }
+
+  async function handleGenerateBio() {
+    setGeneratingBio(true);
+    try {
+      const language = navigator.language?.startsWith('zh') ? 'zh' : 'en';
+      const res = await fetch('/api/ai/generate-bio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.displayName,
+          title: form.title,
+          company: form.company,
+          language,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.bio) {
+        set('bio', data.bio);
+      }
+    } catch {
+      // silently fail — user can still type manually
+    }
+    setGeneratingBio(false);
   }
 
   async function handleSubmit() {
@@ -248,7 +273,27 @@ export default function OnboardingPage() {
                   />
                 </Field>
 
-                <Field label="Bio">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="font-body text-xs text-[#E8E2D8]/60 tracking-widest uppercase">
+                      Bio
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleGenerateBio}
+                      disabled={generatingBio || !form.displayName || !form.title || !form.company}
+                      className="text-[10px] font-body text-[#B8944F] hover:text-[#E8D5A0] tracking-widest transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
+                    >
+                      {generatingBio ? (
+                        <>
+                          <span className="w-3 h-3 border border-[#B8944F] border-t-transparent rounded-full animate-spin inline-block" />
+                          Generating...
+                        </>
+                      ) : (
+                        '✨ AI Generate'
+                      )}
+                    </button>
+                  </div>
                   <textarea
                     value={form.bio}
                     onChange={(e) => set("bio", e.target.value)}
@@ -256,7 +301,7 @@ export default function OnboardingPage() {
                     rows={4}
                     className={inputClass + " resize-none"}
                   />
-                </Field>
+                </div>
               </div>
 
               <div className="mt-6 flex gap-3">
