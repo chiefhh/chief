@@ -215,7 +215,7 @@ function ProductDemo() {
   return (
     <section className="bg-[#FEFCF7] py-28 px-6">
       <div className="max-w-6xl mx-auto">
-        <motion.div variants={stagger} initial="hidden" whileInView="visible"
+        <motion.div variants={stagger} whileInView="visible" initial="visible"
           viewport={{ once: true, amount: 0.2 }}
           className="grid md:grid-cols-2 gap-16 items-center">
 
@@ -298,7 +298,7 @@ function Features() {
   return (
     <section className="bg-[#F5F0E8] py-28 px-6">
       <div className="max-w-6xl mx-auto">
-        <motion.div variants={stagger} initial="hidden" whileInView="visible"
+        <motion.div variants={stagger} whileInView="visible" initial="visible"
           viewport={{ once: true, amount: 0.15 }} className="text-center mb-16">
           <motion.span variants={fadeUp} className="font-body text-[#B8944F] text-xs tracking-[0.2em] uppercase">
             {t.features.eyebrow}
@@ -308,7 +308,7 @@ function Features() {
           </motion.h2>
         </motion.div>
 
-        <motion.div variants={stagger} initial="hidden" whileInView="visible"
+        <motion.div variants={stagger} whileInView="visible" initial="visible"
           viewport={{ once: true, amount: 0.1 }}
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {t.features.items.map(({ title, desc }, i) => {
@@ -338,7 +338,7 @@ function Stats() {
   return (
     <section className="bg-[#0A0A0A] py-20 px-6">
       <div className="max-w-4xl mx-auto">
-        <motion.div variants={stagger} initial="hidden" whileInView="visible"
+        <motion.div variants={stagger} whileInView="visible" initial="visible"
           viewport={{ once: true, amount: 0.3 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {t.stats.items.map(({ val, label }, i) => {
@@ -363,7 +363,7 @@ function Testimonials() {
   return (
     <section className="bg-[#0A0A0A] py-28 px-6">
       <div className="max-w-6xl mx-auto">
-        <motion.div variants={stagger} initial="hidden" whileInView="visible"
+        <motion.div variants={stagger} whileInView="visible" initial="visible"
           viewport={{ once: true, amount: 0.15 }} className="text-center mb-16">
           <motion.span variants={fadeUp} className="font-body text-[#B8944F] text-xs tracking-[0.2em] uppercase">
             {t.testimonials.eyebrow}
@@ -373,7 +373,7 @@ function Testimonials() {
           </motion.h2>
         </motion.div>
 
-        <motion.div variants={stagger} initial="hidden" whileInView="visible"
+        <motion.div variants={stagger} whileInView="visible" initial="visible"
           viewport={{ once: true, amount: 0.1 }} className="grid md:grid-cols-3 gap-6">
           {t.testimonials.items.map(({ quote, name, title, company, no }) => (
             <motion.div key={name} variants={fadeUp} className="relative rounded-[18px] p-8"
@@ -403,7 +403,7 @@ function MembersWall() {
   return (
     <section className="bg-[#FEFCF7] py-28 px-6">
       <div className="max-w-6xl mx-auto">
-        <motion.div variants={stagger} initial="hidden" whileInView="visible"
+        <motion.div variants={stagger} whileInView="visible" initial="visible"
           viewport={{ once: true, amount: 0.15 }} className="text-center mb-12">
           <motion.span variants={fadeUp} className="font-body text-[#B8944F] text-xs tracking-[0.2em] uppercase">
             {t.members.eyebrow}
@@ -416,7 +416,7 @@ function MembersWall() {
           </motion.p>
         </motion.div>
 
-        <motion.div variants={stagger} initial="hidden" whileInView="visible"
+        <motion.div variants={stagger} whileInView="visible" initial="visible"
           viewport={{ once: true, amount: 0.1 }}
           className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
           {memberData.map(({ name, title, company, no, industry }) => (
@@ -459,7 +459,7 @@ function FinalCTA() {
       <div className="absolute inset-0 pointer-events-none"
         style={{ background: "radial-gradient(ellipse 60% 80% at 50% 100%, rgba(184,148,79,0.06) 0%, transparent 70%)" }} />
       <div className="relative max-w-3xl mx-auto text-center">
-        <motion.div variants={stagger} initial="hidden" whileInView="visible"
+        <motion.div variants={stagger} whileInView="visible" initial="visible"
           viewport={{ once: true, amount: 0.3 }}>
           <motion.div variants={fadeUp} className="mx-auto mb-10 max-w-xs h-px"
             style={{ background: "linear-gradient(90deg, transparent, #B8944F 40%, #E8D5A0 60%, transparent)" }} />

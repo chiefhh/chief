@@ -236,6 +236,65 @@ export default function DashboardPage() {
           </div>
         )}
 
+        {/* Quick Actions */}
+        <div className="mb-4">
+          <p className="font-body text-[10px] tracking-widest text-[#555555] uppercase mb-3">Quick Actions</p>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {quickActions.filter((a) => a.showAlways).map((action) => (
+              <Link
+                key={action.href}
+                href={action.href}
+                className="rounded-[14px] p-5 group"
+                style={{
+                  background: "rgba(184,148,79,0.06)",
+                  border: "1px solid rgba(184,148,79,0.15)",
+                }}
+              >
+                <div className="w-8 h-8 rounded-[8px] flex items-center justify-center mb-3 transition-colors"
+                  style={{ background: "rgba(184,148,79,0.12)" }}>
+                  {action.icon}
+                </div>
+                <h3 className="font-body font-semibold text-sm mb-0.5" style={{ color: "#FEFCF7" }}>
+                  {action.label}
+                </h3>
+                <p className="font-body text-xs leading-relaxed" style={{ color: "#555555" }}>
+                  {action.desc}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Visitor Stats (only when profile exists) */}
+        {profile && (
+          <div
+            className="rounded-[16px] px-6 py-5 mb-6 grid grid-cols-3 gap-4"
+            style={{
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(184,148,79,0.15)",
+            }}
+          >
+            <div className="text-center">
+              <p className="font-display text-2xl font-bold" style={{ color: "#FEFCF7" }}>
+                {profile.viewCount}
+              </p>
+              <p className="font-body text-xs mt-1" style={{ color: "#555555" }}>Profile Views</p>
+            </div>
+            <div className="text-center" style={{ borderLeft: "1px solid rgba(184,148,79,0.1)", borderRight: "1px solid rgba(184,148,79,0.1)" }}>
+              <p className="font-display text-2xl font-bold" style={{ color: "#FEFCF7" }}>
+                {pendingCount}
+              </p>
+              <p className="font-body text-xs mt-1" style={{ color: "#555555" }}>Pending Requests</p>
+            </div>
+            <div className="text-center">
+              <p className="font-display text-2xl font-bold" style={{ color: "#FEFCF7" }}>
+                {profile.connectionCount}
+              </p>
+              <p className="font-body text-xs mt-1" style={{ color: "#555555" }}>Connections</p>
+            </div>
+          </div>
+        )}
+
         {/* Invite Code Module (only when profile exists) */}
         {profile && inviteCode && (
           <div
@@ -245,81 +304,22 @@ export default function DashboardPage() {
               border: "1px solid rgba(184,148,79,0.15)",
             }}
           >
-            <p className="font-body text-[10px] tracking-widest text-[#555555] uppercase mb-3">
+            <p className="font-body text-[10px] tracking-widest uppercase mb-3" style={{ color: "#555555" }}>
               Your Invite Code
             </p>
-            <p
-              className="font-mono text-2xl font-bold mb-1"
-              style={{ color: "#B8944F" }}
-            >
+            <p className="font-mono text-2xl font-bold mb-1" style={{ color: "#B8944F" }}>
               {inviteCode}
             </p>
-            <p className="font-body text-[#555555] text-xs mb-4">
+            <p className="font-body text-xs mb-4" style={{ color: "#555555" }}>
               Share with peers who deserve a seat
             </p>
             <button
               onClick={handleCopy}
-              className="inline-flex items-center gap-2 bg-[#B8944F]/10 hover:bg-[#B8944F]/20 text-[#B8944F] font-body font-medium rounded-full px-5 py-2 text-sm transition-colors cursor-pointer"
+              className="inline-flex items-center gap-2 font-body font-medium rounded-full px-5 py-2 text-sm transition-colors cursor-pointer"
+              style={{ background: "rgba(184,148,79,0.1)", color: "#B8944F" }}
             >
               {copied ? "✓ Copied" : "Copy Code"}
             </button>
-          </div>
-        )}
-
-        {/* Quick Actions */}
-        <div className="grid md:grid-cols-3 gap-4 mb-6">
-          {quickActions
-            .filter((a) => a.showAlways)
-            .map((action) => (
-              <Link
-                key={action.href}
-                href={action.href}
-                className="rounded-[16px] p-6 transition-colors hover:border-[#B8944F]/30 group"
-                style={{
-                  background: "rgba(255,255,255,0.03)",
-                  border: "1px solid rgba(255,255,255,0.06)",
-                }}
-              >
-                <div className="w-9 h-9 rounded-[10px] bg-[#B8944F]/10 flex items-center justify-center mb-4 group-hover:bg-[#B8944F]/20 transition-colors">
-                  {action.icon}
-                </div>
-                <h3 className="font-body font-semibold text-[#FEFCF7] text-sm mb-1">
-                  {action.label}
-                </h3>
-                <p className="font-body text-[#555555] text-xs leading-relaxed">
-                  {action.desc}
-                </p>
-              </Link>
-            ))}
-        </div>
-
-        {/* Visitor Stats (only when profile exists) */}
-        {profile && (
-          <div
-            className="rounded-[16px] px-6 py-5 mb-8 grid grid-cols-3 gap-4"
-            style={{
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(184,148,79,0.15)",
-            }}
-          >
-            <div className="text-center">
-              <p className="font-display text-2xl font-bold text-[#FEFCF7]">
-                {profile.viewCount}
-              </p>
-              <p className="font-body text-[#555555] text-xs mt-1">Profile Views</p>
-            </div>
-            <div className="text-center border-x border-[rgba(184,148,79,0.1)]">
-              <p className="font-display text-2xl font-bold text-[#FEFCF7]">
-                {pendingCount}
-              </p>
-              <p className="font-body text-[#555555] text-xs mt-1">Pending Requests</p>
-            </div>
-            <div className="text-center">
-              <p className="font-display text-2xl font-bold text-[#FEFCF7]">
-                {profile.connectionCount}
-              </p>
-              <p className="font-body text-[#555555] text-xs mt-1">Connections</p>
-            </div>
           </div>
         )}
 
