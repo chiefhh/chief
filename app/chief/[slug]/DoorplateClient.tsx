@@ -14,6 +14,7 @@ import {
   Mail,
   X,
 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -83,6 +84,8 @@ function ConnectModal({
 }) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { t } = useLanguage();
+  const dp = t.doorplate;
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -146,17 +149,17 @@ function ConnectModal({
               className="font-display text-xl font-bold mb-2"
               style={{ color: "#FEFCF7" }}
             >
-              Request Sent
+              {dp.requestSent}
             </h3>
             <p className="font-body text-sm" style={{ color: "#E8E2D8" }}>
-              Your connection request has been sent to {receiverName}.
+              {dp.requestSent} {receiverName}.
             </p>
             <button
               onClick={onClose}
               className="mt-6 px-6 py-2.5 rounded-full font-body text-sm font-medium transition-opacity hover:opacity-80"
               style={{ background: "#B8944F", color: "#0A0A0A" }}
             >
-              Done
+              {dp.done}
             </button>
           </div>
         ) : (
@@ -165,7 +168,7 @@ function ConnectModal({
               className="font-display text-xl font-bold mb-1"
               style={{ color: "#FEFCF7" }}
             >
-              Request to Connect
+              {dp.requestConnect}
             </h3>
             <p
               className="font-body text-sm mb-6"
@@ -178,13 +181,13 @@ function ConnectModal({
               className="block font-body text-xs tracking-widest mb-2 uppercase"
               style={{ color: "#B8944F" }}
             >
-              Introduce yourself (optional)
+              {dp.introduceYourself}
             </label>
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={4}
-              placeholder="Share a brief introduction or context for connecting…"
+              placeholder={dp.introducePlaceholder}
               className="w-full rounded-[12px] p-4 font-body text-sm resize-none outline-none transition-colors"
               style={{
                 background: "rgba(255,255,255,0.04)",
@@ -212,10 +215,10 @@ function ConnectModal({
               style={{ background: "#B8944F", color: "#0A0A0A" }}
             >
               {submitting
-                ? "Sending…"
+                ? dp.sending
                 : status === "unauthenticated"
-                ? "Sign in to Connect"
-                : "Send Request"}
+                ? dp.signInToConnect
+                : dp.sendRequest}
             </button>
           </>
         )}
@@ -230,7 +233,6 @@ function QRModal({ url, onClose }: { url: string; onClose: () => void }) {
   const [qrDataUrl, setQrDataUrl] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
-  // Generate QR code client-side
   useEffect(() => {
     import("qrcode").then((QRCode) => {
       QRCode.toDataURL(url, {
@@ -276,11 +278,16 @@ function QRModal({ url, onClose }: { url: string; onClose: () => void }) {
           style={{ background: "#0A0A0A", border: "1px solid rgba(184,148,79,0.2)" }}
         >
           {loading ? (
-            <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: "#B8944F", borderTopColor: "transparent" }} />
+            <div
+              className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
+              style={{ borderColor: "#B8944F", borderTopColor: "transparent" }}
+            />
           ) : qrDataUrl ? (
             <img src={qrDataUrl} alt="QR Code" className="w-full h-full rounded-[12px]" />
           ) : (
-            <p className="font-body text-xs" style={{ color: "rgba(232,226,216,0.4)" }}>Failed to generate</p>
+            <p className="font-body text-xs" style={{ color: "rgba(232,226,216,0.4)" }}>
+              Failed to generate
+            </p>
           )}
         </div>
         <p className="font-body text-xs mt-4" style={{ color: "rgba(232,226,216,0.4)" }}>
@@ -306,6 +313,8 @@ function EmailSignatureModal({
   slug: string;
   onClose: () => void;
 }) {
+  const { t } = useLanguage();
+  const dp = t.doorplate;
   const [copied, setCopied] = useState(false);
   const snippet = `<table cellpadding="0" cellspacing="0" border="0" style="font-family:DM Sans,Helvetica Neue,sans-serif;font-size:13px;color:#333;">
   <tr>
@@ -348,7 +357,7 @@ function EmailSignatureModal({
           className="font-display text-xl font-bold mb-4"
           style={{ color: "#FEFCF7" }}
         >
-          Email Signature
+          {dp.emailSignature}
         </h3>
         <pre
           className="rounded-[12px] p-4 text-xs overflow-x-auto font-mono"
@@ -368,7 +377,7 @@ function EmailSignatureModal({
           style={{ background: "#B8944F", color: "#0A0A0A" }}
         >
           {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-          {copied ? "Copied!" : "Copy HTML"}
+          {copied ? dp.copied : dp.copyHtml}
         </button>
       </div>
     </div>
@@ -388,12 +397,15 @@ function ShareToolbar({
   title: string;
   company: string;
 }) {
+  const { t } = useLanguage();
+  const dp = t.doorplate;
   const [copied, setCopied] = useState(false);
   const [showQR, setShowQR] = useState(false);
   const [showSig, setShowSig] = useState(false);
-  const url = typeof window !== "undefined"
-    ? `${window.location.origin}/chief/${slug}`
-    : `https://chief.me/chief/${slug}`;
+  const url =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/chief/${slug}`
+      : `https://chief.me/chief/${slug}`;
 
   function copyLink() {
     navigator.clipboard.writeText(url).then(() => {
@@ -427,7 +439,7 @@ function ShareToolbar({
           }}
         >
           {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-          {copied ? "Copied!" : "Copy Link"}
+          {copied ? dp.copied : dp.copyLink}
         </button>
         <button
           onClick={() => setShowSig(true)}
@@ -439,7 +451,7 @@ function ShareToolbar({
           }}
         >
           <Mail className="w-3.5 h-3.5" />
-          Email Signature
+          {dp.emailSignature}
         </button>
       </div>
 
@@ -470,6 +482,9 @@ function AboutTab({
   achievements: string[];
   socialLinks: SocialLinks;
 }) {
+  const { t } = useLanguage();
+  const dp = t.doorplate;
+
   return (
     <div className="space-y-6">
       {headline && (
@@ -496,7 +511,7 @@ function AboutTab({
             className="font-body text-[10px] tracking-[0.25em] uppercase mb-3"
             style={{ color: "#B8944F" }}
           >
-            Achievements
+            {dp.achievements}
           </h4>
           <ul className="space-y-2">
             {achievements.map((a, i) => (
@@ -562,6 +577,9 @@ function AboutTab({
 }
 
 function CasesTab({ cases }: { cases: DecisionCase[] }) {
+  const { t } = useLanguage();
+  const dp = t.doorplate;
+
   if (cases.length === 0) {
     return (
       <div className="text-center py-12">
@@ -569,7 +587,7 @@ function CasesTab({ cases }: { cases: DecisionCase[] }) {
           className="font-display text-base italic"
           style={{ color: "rgba(232,226,216,0.3)" }}
         >
-          No cases shared yet.
+          {dp.noCases}
         </p>
       </div>
     );
@@ -648,6 +666,8 @@ function InsightsTab({
   isLoggedIn: boolean;
 }) {
   const router = useRouter();
+  const { t } = useLanguage();
+  const dp = t.doorplate;
 
   if (insights.length === 0) {
     return (
@@ -656,7 +676,7 @@ function InsightsTab({
           className="font-display text-base italic"
           style={{ color: "rgba(232,226,216,0.3)" }}
         >
-          No insights published yet.
+          {dp.noInsights}
         </p>
       </div>
     );
@@ -714,7 +734,7 @@ function InsightsTab({
                 >
                   <Lock className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#B8944F" }} />
                   <span className="font-body text-xs" style={{ color: "rgba(184,148,79,0.8)" }}>
-                    Login to read full insights
+                    {dp.loginToRead}
                   </span>
                 </div>
               )}
@@ -744,14 +764,16 @@ export default function DoorplateClient({
   connectionCount,
 }: DoorplateClientProps) {
   const { data: session } = useSession();
+  const { t } = useLanguage();
+  const dp = t.doorplate;
   const [activeTab, setActiveTab] = useState<"about" | "cases" | "insights">("about");
   const [showConnect, setShowConnect] = useState(false);
   const isLoggedIn = !!session;
 
   const tabs: { key: "about" | "cases" | "insights"; label: string }[] = [
-    { key: "about", label: "About" },
-    { key: "cases", label: `Cases${cases.length > 0 ? ` (${cases.length})` : ""}` },
-    { key: "insights", label: `Insights${insights.length > 0 ? ` (${insights.length})` : ""}` },
+    { key: "about", label: dp.about },
+    { key: "cases", label: `${dp.cases}${cases.length > 0 ? ` (${cases.length})` : ""}` },
+    { key: "insights", label: `${dp.insights}${insights.length > 0 ? ` (${insights.length})` : ""}` },
   ];
 
   return (
@@ -759,12 +781,17 @@ export default function DoorplateClient({
       {/* Stats Bar */}
       <div
         className="grid grid-cols-3 divide-x"
-        style={{ borderColor: "rgba(184,148,79,0.15)", border: "1px solid rgba(184,148,79,0.15)", borderRadius: "16px", overflow: "hidden", marginBottom: "0" }}
+        style={{
+          borderColor: "rgba(184,148,79,0.15)",
+          border: "1px solid rgba(184,148,79,0.15)",
+          borderRadius: "16px",
+          overflow: "hidden",
+        }}
       >
         {[
-          { label: "Views", value: viewCount.toLocaleString() },
-          { label: "Insights", value: insights.length.toString() },
-          { label: "Connections", value: connectionCount.toLocaleString() },
+          { label: dp.views, value: viewCount.toLocaleString() },
+          { label: dp.insights, value: insights.length.toString() },
+          { label: dp.connections, value: connectionCount.toLocaleString() },
         ].map((stat, i) => (
           <div
             key={i}
@@ -801,10 +828,7 @@ export default function DoorplateClient({
             onClick={() => setActiveTab(tab.key)}
             className="relative pb-3 mr-6 font-body text-sm transition-colors"
             style={{
-              color:
-                activeTab === tab.key
-                  ? "#FEFCF7"
-                  : "rgba(232,226,216,0.4)",
+              color: activeTab === tab.key ? "#FEFCF7" : "rgba(232,226,216,0.4)",
             }}
           >
             {tab.label}
@@ -846,14 +870,14 @@ export default function DoorplateClient({
           className="font-body text-xs mb-4"
           style={{ color: "rgba(232,226,216,0.4)" }}
         >
-          Contact details are private
+          {dp.contactPrivate}
         </p>
         <button
           onClick={() => setShowConnect(true)}
           className="px-6 py-2.5 rounded-full font-body text-sm font-semibold transition-opacity hover:opacity-80"
           style={{ background: "#B8944F", color: "#0A0A0A" }}
         >
-          Request to Connect
+          {dp.requestConnect}
         </button>
       </div>
 

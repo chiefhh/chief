@@ -360,7 +360,7 @@ export default function OnboardingPage() {
         </div>
 
         <p className="text-center font-body text-[#555555] text-xs mt-6">
-          1,000 seats · VP+ only · Free forever
+          10,000 seats · VP+ only · Free forever
         </p>
       </div>
     </main>

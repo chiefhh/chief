@@ -12,8 +12,8 @@ const members = [
 ];
 
 const copy = {
-  en: { title: "Members", sub: "1,000 founding seats. VP+ verified.", join: "Apply for an invitation" },
-  zh: { title: "成员目录", sub: "1,000 个创始席位，VP+ 认证。", join: "申请邀请码" },
+  en: { title: "Members", sub: "10,000 founding seats. VP+ verified.", join: "Join now" },
+  zh: { title: "成员目录", sub: "10,000 个创始席位，VP+ 认证。", join: "立即加入" },
 };
 
 export default function MembersPage() {

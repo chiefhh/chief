@@ -21,7 +21,7 @@ export const translations = {
       ctaDashboard: "Go to Dashboard",
       ctaSecondary: "View members",
       trust1: "$0 — Forever Free",
-      trust2: "1,000 Founding Seats",
+      trust2: "10,000 Founding Seats",
       trust3: "VP+ Exclusive",
     },
 
@@ -44,7 +44,7 @@ export const translations = {
         },
       ],
       badge1: "Founding Member",
-      badge2: "Slot 001 of 1,000",
+      badge2: "Slot 001 of 10,000",
       tags: {
         seriesC: "Series C+",
         verified: "Verified",
@@ -92,7 +92,7 @@ export const translations = {
     // ── Stats ─────────────────────────────────────────
     stats: {
       items: [
-        { val: "1,000", label: "Founding Seats" },
+        { val: "10,000", label: "Founding Seats" },
         { val: "VP+", label: "Minimum Level" },
         { val: "$0", label: "Forever Free" },
         { val: "100%", label: "Private by Default" },
@@ -136,7 +136,7 @@ export const translations = {
     members: {
       eyebrow: "Founding members",
       headline: "In good company.",
-      sub: "1,000 founding seats. A permanent record of who shaped this club.",
+      sub: "10,000 founding seats. A permanent record of who shaped this club.",
       viewAll: "View all members",
     },
 
@@ -148,7 +148,63 @@ export const translations = {
       sub: "Stop letting job boards and social feeds define your executive presence. Chief.me is the address your name deserves.",
       button: "Claim your doorplate",
       buttonDashboard: "Go to Dashboard",
-      fine: "Forever Free · VP+ Only · Invitation Required",
+      fine: "Forever Free · VP+ Only · 10,000 Founding Seats",
+    },
+
+    // ── Dashboard ────────────────────────────────────
+    dashboard: {
+      signOut: "Sign out",
+      claimTitle: "Claim your doorplate",
+      claimDesc: "Set up your public profile page at chief.me/your-name — takes less than 2 minutes.",
+      setupProfile: "Set up my profile",
+      view: "View",
+      quickActions: "Quick Actions",
+      editProfile: "Edit Profile",
+      editProfileDesc: "Update your bio, headline, and public information.",
+      memberDirectory: "Member Directory",
+      memberDirectoryDesc: "Browse all founding members of chief.me.",
+      writeInsight: "Write Insight",
+      writeInsightDesc: "Share a thought, lesson, or perspective with the network.",
+      createCase: "Create Case",
+      createCaseDesc: "Document a decision for your professional archive.",
+      shadowWriter: "Shadow Writer",
+      shadowWriterDesc: "Let AI draft insights in your voice.",
+      profileViews: "Profile Views",
+      pendingRequests: "Pending Requests",
+      connections: "Connections",
+      inviteCode: "Your Invite Code",
+      inviteDesc: "Share with peers who deserve a seat",
+      copyCode: "Copy Code",
+      copied: "✓ Copied",
+      foundingFine: "Founding Member · 10,000 seats · VP+ only · Free forever",
+    },
+
+    // ── Doorplate ─────────────────────────────────────
+    doorplate: {
+      foundingMember: "Founding Member",
+      contactPrivate: "Contact details are private",
+      requestConnect: "Request to Connect",
+      requestSent: "Request Sent",
+      done: "Done",
+      introduceYourself: "Introduce yourself (optional)",
+      introducePlaceholder: "Share a brief introduction or context for connecting…",
+      sending: "Sending…",
+      sendRequest: "Send Request",
+      signInToConnect: "Sign in to Connect",
+      views: "Views",
+      insights: "Insights",
+      connections: "Connections",
+      about: "About",
+      cases: "Cases",
+      share: "Share",
+      emailSignature: "Email Signature",
+      copyLink: "Copy Link",
+      copied: "Copied!",
+      copyHtml: "Copy HTML",
+      loginToRead: "Login to read full insights",
+      noInsights: "No insights published yet.",
+      noCases: "No cases shared yet.",
+      achievements: "Achievements",
     },
 
     // ── Footer ───────────────────────────────────────
@@ -191,7 +247,7 @@ export const translations = {
       ctaDashboard: "进入控制台",
       ctaSecondary: "查看成员",
       trust1: "$0 — 永久免费",
-      trust2: "1,000 个创始席位",
+      trust2: "10,000 个创始席位",
       trust3: "VP+ 专属",
     },
 
@@ -214,7 +270,7 @@ export const translations = {
         },
       ],
       badge1: "创始成员",
-      badge2: "第 001 / 1,000 席",
+      badge2: "第 001 / 10,000 席",
       tags: {
         seriesC: "C 轮以上",
         verified: "已认证",
@@ -262,7 +318,7 @@ export const translations = {
     // ── Stats ─────────────────────────────────────────
     stats: {
       items: [
-        { val: "1,000", label: "创始席位" },
+        { val: "10,000", label: "创始席位" },
         { val: "VP+", label: "最低级别要求" },
         { val: "$0", label: "永久免费" },
         { val: "100%", label: "默认私密" },
@@ -306,7 +362,7 @@ export const translations = {
     members: {
       eyebrow: "创始成员",
       headline: "与优秀的人为伍。",
-      sub: "1,000 个创始席位，永久记录谁塑造了这个圈子。",
+      sub: "10,000 个创始席位，永久记录谁塑造了这个圈子。",
       viewAll: "查看全部成员",
     },
 
@@ -318,7 +374,63 @@ export const translations = {
       sub: "不要再让招聘网站和社交信息流定义你的高管形象。Chief.me 是你的名字应得的地址。",
       button: "认领我的数字门牌",
       buttonDashboard: "进入控制台",
-      fine: "永久免费 · 仅限 VP+ · 需要邀请码",
+      fine: "永久免费 · 仅限 VP+ · 10,000 个创始席位",
+    },
+
+    // ── Dashboard ────────────────────────────────────
+    dashboard: {
+      signOut: "退出登录",
+      claimTitle: "认领你的数字门牌",
+      claimDesc: "在 chief.me/your-name 创建你的公开主页 — 不到 2 分钟完成。",
+      setupProfile: "创建我的主页",
+      view: "查看",
+      quickActions: "快捷操作",
+      editProfile: "编辑资料",
+      editProfileDesc: "更新你的简介、一句话介绍和公开信息。",
+      memberDirectory: "成员目录",
+      memberDirectoryDesc: "浏览所有 chief.me 创始成员。",
+      writeInsight: "发布洞察",
+      writeInsightDesc: "与网络分享你的观点、经验或见解。",
+      createCase: "创建案例",
+      createCaseDesc: "记录一个决策，加入你的专业档案。",
+      shadowWriter: "影子写手",
+      shadowWriterDesc: "让 AI 以你的口吻撰写洞察文章。",
+      profileViews: "主页浏览量",
+      pendingRequests: "待处理请求",
+      connections: "连接数",
+      inviteCode: "你的邀请码",
+      inviteDesc: "分享给值得拥有席位的同行",
+      copyCode: "复制邀请码",
+      copied: "✓ 已复制",
+      foundingFine: "创始成员 · 10,000 席位 · 仅限 VP+ · 永久免费",
+    },
+
+    // ── Doorplate ─────────────────────────────────────
+    doorplate: {
+      foundingMember: "创始成员",
+      contactPrivate: "联系方式不公开",
+      requestConnect: "申请连接",
+      requestSent: "请求已发送",
+      done: "完成",
+      introduceYourself: "自我介绍（选填）",
+      introducePlaceholder: "简短介绍自己或说明连接的背景…",
+      sending: "发送中…",
+      sendRequest: "发送请求",
+      signInToConnect: "登录后连接",
+      views: "浏览量",
+      insights: "洞察",
+      connections: "连接",
+      about: "简介",
+      cases: "案例",
+      share: "分享",
+      emailSignature: "邮件签名",
+      copyLink: "复制链接",
+      copied: "已复制！",
+      copyHtml: "复制 HTML",
+      loginToRead: "登录后阅读完整洞察",
+      noInsights: "暂无已发布的洞察。",
+      noCases: "暂无已分享的案例。",
+      achievements: "成就",
     },
 
     // ── Footer ───────────────────────────────────────

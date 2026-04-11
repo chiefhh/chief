@@ -13,6 +13,7 @@ import {
   Briefcase,
   Sparkles,
 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface ProfileData {
   slug: string;
@@ -28,6 +29,8 @@ interface ProfileData {
 export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { t, lang } = useLanguage();
+  const d = t.dashboard;
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [pendingCount, setPendingCount] = useState(0);
@@ -41,7 +44,7 @@ export default function DashboardPage() {
     if (status !== "authenticated") return;
     fetch("/api/profile/setup")
       .then((r) => r.json())
-      .then((d) => setProfile(d.profile ?? null))
+      .then((data) => setProfile(data.profile ?? null))
       .finally(() => setLoadingProfile(false));
   }, [status]);
 
@@ -49,7 +52,7 @@ export default function DashboardPage() {
     if (!profile) return;
     fetch("/api/connections/pending-count")
       .then((r) => r.json())
-      .then((d) => setPendingCount(d.count ?? 0))
+      .then((data) => setPendingCount(data.count ?? 0))
       .catch(() => {});
   }, [profile]);
 
@@ -85,38 +88,38 @@ export default function DashboardPage() {
 
   const quickActions = [
     {
-      href: "/onboarding",
+      href: "/edit",
       icon: <Settings className="w-4 h-4 text-[#B8944F]" />,
-      label: "Edit Profile",
-      desc: "Update your bio, headline, and public information.",
+      label: d.editProfile,
+      desc: d.editProfileDesc,
       showAlways: !!profile,
     },
     {
       href: "/members",
       icon: <Users className="w-4 h-4 text-[#B8944F]" />,
-      label: "Member Directory",
-      desc: "Browse all founding members of chief.me.",
+      label: d.memberDirectory,
+      desc: d.memberDirectoryDesc,
       showAlways: true,
     },
     {
       href: "/insights/new",
       icon: <FileText className="w-4 h-4 text-[#B8944F]" />,
-      label: "Write Insight",
-      desc: "Share a thought, lesson, or perspective with the network.",
+      label: d.writeInsight,
+      desc: d.writeInsightDesc,
       showAlways: true,
     },
     {
       href: "/cases/new",
       icon: <Briefcase className="w-4 h-4 text-[#B8944F]" />,
-      label: "Create Case",
-      desc: "Document a decision for your professional archive.",
+      label: d.createCase,
+      desc: d.createCaseDesc,
       showAlways: true,
     },
     {
       href: "/insights/shadow-writer",
       icon: <Sparkles className="w-4 h-4 text-[#B8944F]" />,
-      label: "Shadow Writer",
-      desc: "Let AI draft insights in your voice.",
+      label: d.shadowWriter,
+      desc: d.shadowWriterDesc,
       showAlways: true,
     },
   ];
@@ -142,7 +145,7 @@ export default function DashboardPage() {
             className="flex items-center gap-2 font-body text-xs text-[#555555] hover:text-[#E8E2D8] transition-colors cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
-            Sign out
+            {d.signOut}
           </button>
         </div>
 
@@ -173,16 +176,16 @@ export default function DashboardPage() {
             }}
           >
             <h2 className="font-display text-xl font-bold text-[#FEFCF7] mb-2">
-              Claim your doorplate
+              {d.claimTitle}
             </h2>
             <p className="font-body text-[#555555] text-sm mb-6">
-              Set up your public profile page at chief.me/your-name — takes less than 2 minutes.
+              {d.claimDesc}
             </p>
             <Link
               href="/onboarding"
               className="inline-flex items-center gap-2 bg-[#B8944F] hover:bg-[#9d7c3e] text-[#FEFCF7] font-body font-medium rounded-full px-6 py-3 text-sm transition-colors"
             >
-              Set up my profile <ArrowRight className="w-4 h-4" />
+              {d.setupProfile} <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         )}
@@ -230,7 +233,7 @@ export default function DashboardPage() {
                 target="_blank"
                 className="flex items-center gap-1.5 font-body text-xs text-[#B8944F] hover:text-[#E8D5A0] transition-colors"
               >
-                View <ExternalLink className="w-3 h-3" />
+                {d.view} <ExternalLink className="w-3 h-3" />
               </Link>
             </div>
           </div>
@@ -238,7 +241,9 @@ export default function DashboardPage() {
 
         {/* Quick Actions */}
         <div className="mb-4">
-          <p className="font-body text-[10px] tracking-widest text-[#555555] uppercase mb-3">Quick Actions</p>
+          <p className="font-body text-[10px] tracking-widest text-[#555555] uppercase mb-3">
+            {d.quickActions}
+          </p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {quickActions.filter((a) => a.showAlways).map((action) => (
               <Link
@@ -250,8 +255,10 @@ export default function DashboardPage() {
                   border: "1px solid rgba(184,148,79,0.15)",
                 }}
               >
-                <div className="w-8 h-8 rounded-[8px] flex items-center justify-center mb-3 transition-colors"
-                  style={{ background: "rgba(184,148,79,0.12)" }}>
+                <div
+                  className="w-8 h-8 rounded-[8px] flex items-center justify-center mb-3 transition-colors"
+                  style={{ background: "rgba(184,148,79,0.12)" }}
+                >
                   {action.icon}
                 </div>
                 <h3 className="font-body font-semibold text-sm mb-0.5" style={{ color: "#FEFCF7" }}>
@@ -278,53 +285,73 @@ export default function DashboardPage() {
               <p className="font-display text-2xl font-bold" style={{ color: "#FEFCF7" }}>
                 {profile.viewCount}
               </p>
-              <p className="font-body text-xs mt-1" style={{ color: "#555555" }}>Profile Views</p>
+              <p className="font-body text-xs mt-1" style={{ color: "#555555" }}>
+                {d.profileViews}
+              </p>
             </div>
-            <div className="text-center" style={{ borderLeft: "1px solid rgba(184,148,79,0.1)", borderRight: "1px solid rgba(184,148,79,0.1)" }}>
+            <div
+              className="text-center"
+              style={{
+                borderLeft: "1px solid rgba(184,148,79,0.1)",
+                borderRight: "1px solid rgba(184,148,79,0.1)",
+              }}
+            >
               <p className="font-display text-2xl font-bold" style={{ color: "#FEFCF7" }}>
                 {pendingCount}
               </p>
-              <p className="font-body text-xs mt-1" style={{ color: "#555555" }}>Pending Requests</p>
+              <p className="font-body text-xs mt-1" style={{ color: "#555555" }}>
+                {d.pendingRequests}
+              </p>
             </div>
             <div className="text-center">
               <p className="font-display text-2xl font-bold" style={{ color: "#FEFCF7" }}>
                 {profile.connectionCount}
               </p>
-              <p className="font-body text-xs mt-1" style={{ color: "#555555" }}>Connections</p>
+              <p className="font-body text-xs mt-1" style={{ color: "#555555" }}>
+                {d.connections}
+              </p>
             </div>
           </div>
         )}
 
-        {/* Invite Code Module (only when profile exists) */}
+        {/* Invite Code Module — coming soon */}
         {profile && inviteCode && (
           <div
-            className="rounded-[16px] p-6 mb-6"
+            className="rounded-[16px] p-6 mb-6 opacity-50"
             style={{
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(184,148,79,0.15)",
+              background: "rgba(255,255,255,0.02)",
+              border: "1px solid rgba(184,148,79,0.08)",
             }}
           >
-            <p className="font-body text-[10px] tracking-widest uppercase mb-3" style={{ color: "#555555" }}>
-              Your Invite Code
-            </p>
-            <p className="font-mono text-2xl font-bold mb-1" style={{ color: "#B8944F" }}>
+            <div className="flex items-center gap-2 mb-1">
+              <p className="font-body text-[10px] tracking-widest uppercase" style={{ color: "#555555" }}>
+                {d.inviteCode}
+              </p>
+              <span
+                className="font-body text-[9px] tracking-widest uppercase px-2 py-0.5 rounded-full"
+                style={{ background: "rgba(184,148,79,0.1)", color: "rgba(184,148,79,0.6)", border: "1px solid rgba(184,148,79,0.15)" }}
+              >
+                {lang === "zh" ? "即将推出" : "Coming Soon"}
+              </span>
+            </div>
+            <p className="font-mono text-2xl font-bold mb-1" style={{ color: "rgba(184,148,79,0.4)" }}>
               {inviteCode}
             </p>
             <p className="font-body text-xs mb-4" style={{ color: "#555555" }}>
-              Share with peers who deserve a seat
+              {d.inviteDesc}
             </p>
             <button
-              onClick={handleCopy}
-              className="inline-flex items-center gap-2 font-body font-medium rounded-full px-5 py-2 text-sm transition-colors cursor-pointer"
-              style={{ background: "rgba(184,148,79,0.1)", color: "#B8944F" }}
+              disabled
+              className="inline-flex items-center gap-2 font-body font-medium rounded-full px-5 py-2 text-sm cursor-not-allowed"
+              style={{ background: "rgba(184,148,79,0.06)", color: "rgba(184,148,79,0.4)" }}
             >
-              {copied ? "✓ Copied" : "Copy Code"}
+              {d.copyCode}
             </button>
           </div>
         )}
 
         <p className="text-center font-body text-[#555555] text-xs mt-2">
-          Founding Member · 1,000 seats · VP+ only · Free forever
+          {d.foundingFine}
         </p>
       </div>
     </main>
