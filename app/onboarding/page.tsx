@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
+import { SiteLogo } from "@/components/SiteLogo";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 
 function slugify(str: string) {
@@ -139,7 +139,7 @@ export default function OnboardingPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="mb-1">
-            <Image src="/logo.png" alt="chief.me" height={358} width={623} style={{ height: "64px", width: "auto", filter: "brightness(0) invert(1)" }} />
+            <SiteLogo size={40} theme="light" />
           </div>
           <div className="text-[10px] font-body tracking-[0.25em] text-[#B8944F] uppercase">
             Founding Member

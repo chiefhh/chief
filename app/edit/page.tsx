@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
+import { SiteLogo } from "@/components/SiteLogo";
 import { ArrowLeft, Check } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
@@ -250,7 +250,7 @@ export default function EditPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <Link href="/">
-            <Image src="/logo.png" alt="chief.me" height={358} width={623} style={{ height: "44px", width: "auto", filter: "brightness(0) invert(1)" }} />
+            <SiteLogo size={28} theme="light" />
           </Link>
           <Link
             href="/dashboard"

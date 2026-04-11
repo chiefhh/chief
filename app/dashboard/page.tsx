@@ -3,7 +3,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { SiteLogo } from "@/components/SiteLogo";
 import {
   LogOut,
   ExternalLink,
@@ -139,7 +139,7 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <Link href="/">
-            <Image src="/logo.png" alt="chief.me" height={358} width={623} style={{ height: "44px", width: "auto", filter: "brightness(0) invert(1)" }} />
+            <SiteLogo size={28} theme="light" />
           </Link>
           <button
             onClick={() => signOut({ callbackUrl: "/" })}
