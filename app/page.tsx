@@ -76,7 +76,7 @@ function Nav() {
       }}
     >
       <Link href="/">
-        <Image src="/logo.png" alt="chief.me" height={36} width={148} style={{ mixBlendMode: "multiply" }} />
+        <Image src="/logo.png" alt="chief.me" height={1024} width={1024} style={{ height: "40px", width: "auto" }} />
       </Link>
 
       <div className="hidden md:flex items-center gap-8 text-sm text-[#555555] font-body">
@@ -527,8 +527,8 @@ function Footer() {
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start gap-10">
           <div>
-            <div className="mb-2 bg-white rounded-lg inline-block px-2 py-1">
-              <Image src="/logo.png" alt="chief.me" height={28} width={115} />
+            <div className="mb-2">
+              <Image src="/logo.png" alt="chief.me" height={1024} width={1024} style={{ height: "44px", width: "auto", filter: "brightness(0) invert(1)" }} />
             </div>
             <p className="font-body text-[#555555] text-sm max-w-xs leading-relaxed">{t.footer.brand}</p>
             <div className="flex items-center gap-2 mt-4">

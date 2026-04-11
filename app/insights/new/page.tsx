@@ -84,8 +84,8 @@ export default function NewInsightPage() {
             <ArrowLeft className="w-4 h-4" />
             <span className="font-body text-sm">Back</span>
           </Link>
-          <Link href="/" className="bg-white rounded-lg px-2 py-0.5 inline-block">
-            <Image src="/logo.png" alt="chief.me" height={28} width={115} />
+          <Link href="/">
+            <Image src="/logo.png" alt="chief.me" height={1024} width={1024} style={{ height: "40px", width: "auto", filter: "brightness(0) invert(1)" }} />
           </Link>
           <div className="w-16" />
         </div>

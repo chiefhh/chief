@@ -62,8 +62,8 @@ function JoinForm() {
     <div className="relative w-full max-w-md">
       {/* Logo */}
       <div className="text-center mb-10">
-        <div className="mb-1 bg-white rounded-lg inline-block px-2 py-1">
-          <Image src="/logo.png" alt="chief.me" height={32} width={130} />
+        <div className="mb-1">
+          <Image src="/logo.png" alt="chief.me" height={1024} width={1024} style={{ height: "48px", width: "auto", filter: "brightness(0) invert(1)" }} />
         </div>
         <div className="text-[10px] font-body tracking-[0.25em] text-[#B8944F] uppercase">
           {t.founding}
