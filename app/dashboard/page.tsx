@@ -3,6 +3,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   LogOut,
   ExternalLink,
@@ -137,8 +138,8 @@ export default function DashboardPage() {
       <div className="relative max-w-3xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
-          <Link href="/" className="font-display text-xl font-bold text-[#FEFCF7]">
-            chief<span className="text-[#B8944F]">.me</span>
+          <Link href="/" className="bg-white rounded-lg px-2 py-0.5 inline-block">
+            <Image src="/logo.png" alt="chief.me" height={28} width={115} />
           </Link>
           <button
             onClick={() => signOut({ callbackUrl: "/" })}

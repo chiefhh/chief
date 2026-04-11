@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Shield,
   Briefcase,
@@ -74,8 +75,8 @@ function Nav() {
         borderBottom: "1px solid rgba(184,148,79,0.12)",
       }}
     >
-      <Link href="/" className="font-display text-xl font-bold tracking-tight text-[#0A0A0A]">
-        chief<span className="text-[#B8944F]">.me</span>
+      <Link href="/">
+        <Image src="/logo.png" alt="chief.me" height={36} width={148} style={{ mixBlendMode: "multiply" }} />
       </Link>
 
       <div className="hidden md:flex items-center gap-8 text-sm text-[#555555] font-body">
@@ -526,8 +527,8 @@ function Footer() {
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start gap-10">
           <div>
-            <div className="font-display text-xl font-bold text-[#FEFCF7] mb-2">
-              chief<span className="text-[#B8944F]">.me</span>
+            <div className="mb-2 bg-white rounded-lg inline-block px-2 py-1">
+              <Image src="/logo.png" alt="chief.me" height={28} width={115} />
             </div>
             <p className="font-body text-[#555555] text-sm max-w-xs leading-relaxed">{t.footer.brand}</p>
             <div className="flex items-center gap-2 mt-4">

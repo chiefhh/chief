@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { ArrowLeft } from "lucide-react"
 
 export default function NewInsightPage() {
@@ -83,8 +84,8 @@ export default function NewInsightPage() {
             <ArrowLeft className="w-4 h-4" />
             <span className="font-body text-sm">Back</span>
           </Link>
-          <Link href="/" className="font-display text-xl font-bold" style={{ color: "#FEFCF7" }}>
-            chief<span style={{ color: "#B8944F" }}>.me</span>
+          <Link href="/" className="bg-white rounded-lg px-2 py-0.5 inline-block">
+            <Image src="/logo.png" alt="chief.me" height={28} width={115} />
           </Link>
           <div className="w-16" />
         </div>

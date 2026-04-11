@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 
 function slugify(str: string) {
@@ -137,8 +138,8 @@ export default function OnboardingPage() {
       <div className="relative w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="font-display text-3xl font-bold text-[#FEFCF7] mb-1">
-            chief<span className="text-[#B8944F]">.me</span>
+          <div className="mb-1 bg-white rounded-lg inline-block px-2 py-1">
+            <Image src="/logo.png" alt="chief.me" height={32} width={130} />
           </div>
           <div className="text-[10px] font-body tracking-[0.25em] text-[#B8944F] uppercase">
             Founding Member

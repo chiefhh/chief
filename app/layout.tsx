@@ -23,6 +23,11 @@ export const metadata: Metadata = {
   description:
     "The exclusive personal brand platform for VP-level and above executives. Claim your digital doorplate — free, forever.",
   metadataBase: new URL("https://chief.me"),
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
   openGraph: {
     title: "Chief.me — The Digital Doorplate for Leaders",
     description:

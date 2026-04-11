@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, Check } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
@@ -248,8 +249,8 @@ export default function EditPage() {
       <div className="relative max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
-          <Link href="/" className="font-display text-xl font-bold text-[#FEFCF7]">
-            chief<span className="text-[#B8944F]">.me</span>
+          <Link href="/" className="bg-white rounded-lg px-2 py-0.5 inline-block">
+            <Image src="/logo.png" alt="chief.me" height={28} width={115} />
           </Link>
           <Link
             href="/dashboard"
