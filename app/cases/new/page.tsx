@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { SiteLogo } from "@/components/SiteLogo"
+import Image from "next/image"
 import ReactMarkdown from "react-markdown"
 import { ArrowLeft } from "lucide-react"
 
@@ -147,7 +147,7 @@ export default function NewCasePage() {
             <span className="font-body text-sm">Back</span>
           </Link>
           <Link href="/">
-            <SiteLogo size={28} theme="light" />
+            <Image src="/logo.png" alt="chief.me" height={358} width={623} style={{ height: "44px", width: "auto", filter: "brightness(0) invert(1)" }} />
           </Link>
           <div className="w-16" />
         </div>

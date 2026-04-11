@@ -4,7 +4,7 @@ import { signIn, useSession } from "next-auth/react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { SiteLogo } from "@/components/SiteLogo";
+import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
 import { Suspense } from "react";
 
@@ -63,7 +63,7 @@ function JoinForm() {
       {/* Logo */}
       <div className="text-center mb-10">
         <div className="mb-1">
-          <SiteLogo size={40} theme="light" />
+          <Image src="/logo.png" alt="chief.me" height={358} width={623} style={{ height: "64px", width: "auto", filter: "brightness(0) invert(1)" }} />
         </div>
         <div className="text-[10px] font-body tracking-[0.25em] text-[#B8944F] uppercase">
           {t.founding}
