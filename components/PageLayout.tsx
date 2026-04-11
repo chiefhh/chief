@@ -12,7 +12,7 @@ export function PageLayout({ children, title }: { children: React.ReactNode; tit
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 md:px-16 h-16"
         style={{ background: "rgba(254,252,247,0.9)", backdropFilter: "blur(20px)", borderBottom: "1px solid rgba(184,148,79,0.12)" }}>
         <Link href="/">
-          <Image src="/logo.png" alt="chief.me" height={1024} width={1024} style={{ height: "40px", width: "auto" }} />
+          <Image src="/logo.png" alt="chief.me" height={358} width={623} style={{ height: "44px", width: "auto" }} />
         </Link>
         <div className="flex items-center gap-4">
           <button onClick={toggle} className="font-body text-xs text-[#555555] hover:text-[#0A0A0A] transition-colors">

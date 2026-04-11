@@ -147,7 +147,7 @@ export default function NewCasePage() {
             <span className="font-body text-sm">Back</span>
           </Link>
           <Link href="/">
-            <Image src="/logo.png" alt="chief.me" height={1024} width={1024} style={{ height: "40px", width: "auto", filter: "brightness(0) invert(1)" }} />
+            <Image src="/logo.png" alt="chief.me" height={358} width={623} style={{ height: "44px", width: "auto", filter: "brightness(0) invert(1)" }} />
           </Link>
           <div className="w-16" />
         </div>

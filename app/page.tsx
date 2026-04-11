@@ -76,7 +76,7 @@ function Nav() {
       }}
     >
       <Link href="/">
-        <Image src="/logo.png" alt="chief.me" height={1024} width={1024} style={{ height: "40px", width: "auto" }} />
+        <Image src="/logo.png" alt="chief.me" height={358} width={623} style={{ height: "44px", width: "auto" }} />
       </Link>
 
       <div className="hidden md:flex items-center gap-8 text-sm text-[#555555] font-body">
@@ -528,7 +528,7 @@ function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-start gap-10">
           <div>
             <div className="mb-2">
-              <Image src="/logo.png" alt="chief.me" height={1024} width={1024} style={{ height: "44px", width: "auto", filter: "brightness(0) invert(1)" }} />
+              <Image src="/logo.png" alt="chief.me" height={358} width={623} style={{ height: "52px", width: "auto", filter: "brightness(0) invert(1)" }} />
             </div>
             <p className="font-body text-[#555555] text-sm max-w-xs leading-relaxed">{t.footer.brand}</p>
             <div className="flex items-center gap-2 mt-4">
