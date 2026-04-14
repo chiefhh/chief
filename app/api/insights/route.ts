@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     })
     if (!profile) return Response.json({ error: "No profile" }, { status: 400 })
 
-    const { title, content, summary, source, isDraft, isPublic } = await req.json()
+    const { title, content, summary, source, isDraft, isPublic, tags } = await req.json()
 
     const insight = await prisma.insight.create({
       data: {
@@ -24,6 +24,7 @@ export async function POST(req: Request) {
         source: source || 'MANUAL',
         isDraft: isDraft !== false,
         isPublic: isPublic !== false,
+        tags: Array.isArray(tags) ? tags.slice(0, 3) : [],
       }
     })
 
