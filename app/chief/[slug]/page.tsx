@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Check, Shield } from "lucide-react";
@@ -71,7 +73,7 @@ export default async function ProfilePage({ params }: Props) {
       verified: true,
       viewCount: true,
       connectionCount: true,
-      user: { select: { image: true } },
+      user: { select: { image: true, id: true } },
       decisionCases: {
         where: { isPublic: true },
         orderBy: { createdAt: "desc" },
@@ -98,6 +100,9 @@ export default async function ProfilePage({ params }: Props) {
   });
 
   if (!profile) notFound();
+
+  const session = await getServerSession(authOptions);
+  const isOwner = session?.user?.id === profile.user.id;
 
   // Parse JSON fields
   const socialLinks =
@@ -331,6 +336,7 @@ export default async function ProfilePage({ params }: Props) {
               name={profile.displayName}
               title={profile.title}
               company={profile.company}
+              isOwner={isOwner}
             />
           </div>
 

@@ -459,17 +459,20 @@ function ShareToolbar({
   name,
   title,
   company,
+  isOwner,
 }: {
   slug: string;
   name: string;
   title: string;
   company: string;
+  isOwner?: boolean;
 }) {
   const { t } = useLanguage();
   const dp = t.doorplate;
   const [copied, setCopied] = useState(false);
   const [showQR, setShowQR] = useState(false);
   const [showSig, setShowSig] = useState(false);
+  const [walletLoading, setWalletLoading] = useState(false);
   const url =
     typeof window !== "undefined"
       ? `${window.location.origin}/chief/${slug}`
@@ -521,6 +524,26 @@ function ShareToolbar({
           <Mail className="w-3.5 h-3.5" />
           {dp.emailSignature}
         </button>
+        {isOwner && (
+          <button
+            onClick={async () => {
+              setWalletLoading(true);
+              try {
+                const res = await fetch("/api/wallet/google", { method: "POST" });
+                const data = await res.json();
+                if (data.url) window.open(data.url, "_blank");
+              } catch { /* silently fail */ } finally { setWalletLoading(false); }
+            }}
+            disabled={walletLoading}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-body text-xs transition-all hover:opacity-80 disabled:opacity-50"
+            style={{ background: "rgba(66,133,244,0.1)", border: "1px solid rgba(66,133,244,0.25)", color: "#4285F4" }}
+          >
+            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/>
+            </svg>
+            {walletLoading ? "…" : (dp.addToWallet ?? "Add to Google Wallet")}
+          </button>
+        )}
         <button
           onClick={() => downloadDigitalCard(name, title, company, slug)}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-body text-xs transition-all hover:opacity-80"

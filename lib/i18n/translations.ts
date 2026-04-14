@@ -204,6 +204,7 @@ export const translations = {
       digitalCard: "Digital Card",
       exportPdf: "Export PDF",
       bookMeeting: "Book a Meeting",
+      addToWallet: "Add to Google Wallet",
     },
 
     // ── Footer ───────────────────────────────────────
@@ -429,6 +430,7 @@ export const translations = {
       digitalCard: "数字名片",
       exportPdf: "导出 PDF",
       bookMeeting: "预约时间",
+      addToWallet: "添加到 Google 钱包",
     },
 
     // ── Footer ───────────────────────────────────────
