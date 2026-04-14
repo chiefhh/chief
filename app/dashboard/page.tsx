@@ -13,6 +13,7 @@ import {
   FileText,
   Briefcase,
   Sparkles,
+  Wallet,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
@@ -35,6 +36,7 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [pendingCount, setPendingCount] = useState(0);
+  const [walletLoading, setWalletLoading] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") router.replace("/join");
@@ -56,6 +58,21 @@ export default function DashboardPage() {
       .catch(() => {});
   }, [profile]);
 
+  async function handleAddToWallet() {
+    if (!profile || walletLoading) return;
+    setWalletLoading(true);
+    try {
+      const res = await fetch("/api/wallet/google", { method: "POST" });
+      const data = await res.json();
+      if (res.ok && data.saveUrl) {
+        window.open(data.saveUrl, "_blank");
+      }
+    } catch {
+      // silently fail
+    }
+    setWalletLoading(false);
+  }
+
   if (status === "loading" || loadingProfile) {
     return (
       <main className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
@@ -74,7 +91,14 @@ export default function DashboardPage() {
         .toUpperCase()
     : "?";
 
-  const quickActions = [
+  const quickActions: Array<{
+    href?: string;
+    onClick?: () => void;
+    icon: React.ReactNode;
+    label: string;
+    desc: string;
+    showAlways: boolean;
+  }> = [
     {
       href: "/edit",
       icon: <Settings className="w-4 h-4 text-[#B8944F]" />,
@@ -116,6 +140,13 @@ export default function DashboardPage() {
       label: lang === "zh" ? "写作模板库" : "Template Library",
       desc: lang === "zh" ? "8 种决策场景，填空式引导写作。" : "8 decision templates with guided questions.",
       showAlways: true,
+    },
+    {
+      onClick: handleAddToWallet,
+      icon: <Wallet className="w-4 h-4 text-[#B8944F]" />,
+      label: d.walletCard,
+      desc: d.walletCardDesc,
+      showAlways: !!profile,
     },
   ];
 
@@ -240,30 +271,51 @@ export default function DashboardPage() {
             {d.quickActions}
           </p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {quickActions.filter((a) => a.showAlways).map((action) => (
-              <Link
-                key={action.href}
-                href={action.href}
-                className="rounded-[14px] p-5 group"
-                style={{
-                  background: "rgba(184,148,79,0.06)",
-                  border: "1px solid rgba(184,148,79,0.15)",
-                }}
-              >
-                <div
-                  className="w-8 h-8 rounded-[8px] flex items-center justify-center mb-3 transition-colors"
-                  style={{ background: "rgba(184,148,79,0.12)" }}
+            {quickActions.filter((a) => a.showAlways).map((action) => {
+              const tileClass = "rounded-[14px] p-5 group text-left w-full";
+              const tileStyle = {
+                background: "rgba(184,148,79,0.06)",
+                border: "1px solid rgba(184,148,79,0.15)",
+              };
+              const tileInner = (
+                <>
+                  <div
+                    className="w-8 h-8 rounded-[8px] flex items-center justify-center mb-3 transition-colors"
+                    style={{ background: "rgba(184,148,79,0.12)" }}
+                  >
+                    {action.icon}
+                  </div>
+                  <h3 className="font-body font-semibold text-sm mb-0.5" style={{ color: "#FEFCF7" }}>
+                    {action.label}
+                  </h3>
+                  <p className="font-body text-xs leading-relaxed" style={{ color: "#555555" }}>
+                    {action.desc}
+                  </p>
+                </>
+              );
+              if (action.onClick) {
+                return (
+                  <button
+                    key={action.label}
+                    onClick={action.onClick}
+                    className={tileClass}
+                    style={tileStyle}
+                  >
+                    {tileInner}
+                  </button>
+                );
+              }
+              return (
+                <Link
+                  key={action.href}
+                  href={action.href!}
+                  className={tileClass}
+                  style={tileStyle}
                 >
-                  {action.icon}
-                </div>
-                <h3 className="font-body font-semibold text-sm mb-0.5" style={{ color: "#FEFCF7" }}>
-                  {action.label}
-                </h3>
-                <p className="font-body text-xs leading-relaxed" style={{ color: "#555555" }}>
-                  {action.desc}
-                </p>
-              </Link>
-            ))}
+                  {tileInner}
+                </Link>
+              );
+            })}
           </div>
         </div>
 
