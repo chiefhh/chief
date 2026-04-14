@@ -336,20 +336,21 @@ export default function DashboardPage() {
                 {d.profileViews}
               </p>
             </div>
-            <div
-              className="text-center"
+            <Link
+              href="/connections"
+              className="text-center block group"
               style={{
                 borderLeft: "1px solid rgba(184,148,79,0.1)",
                 borderRight: "1px solid rgba(184,148,79,0.1)",
               }}
             >
-              <p className="font-display text-2xl font-bold" style={{ color: "#FEFCF7" }}>
+              <p className="font-display text-2xl font-bold group-hover:text-[#B8944F] transition-colors" style={{ color: "#FEFCF7" }}>
                 {pendingCount}
               </p>
               <p className="font-body text-xs mt-1" style={{ color: "#555555" }}>
                 {d.pendingRequests}
               </p>
-            </div>
+            </Link>
             <div className="text-center">
               <p className="font-display text-2xl font-bold" style={{ color: "#FEFCF7" }}>
                 {profile.connectionCount}
