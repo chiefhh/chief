@@ -55,7 +55,7 @@ function JoinForm() {
 
   async function handleGoogle() {
     setLoading(true);
-    signIn("google", { callbackUrl: "/onboarding" });
+    signIn("google", { callbackUrl: "/apply" });
   }
 
   return (

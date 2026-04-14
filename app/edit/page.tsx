@@ -60,6 +60,7 @@ const copy = {
     linkedin: "LinkedIn URL",
     twitter: "Twitter / X URL",
     website: "Personal Website",
+    calendly: "Calendly URL",
     required: "Required fields",
   },
   zh: {
@@ -84,6 +85,7 @@ const copy = {
     linkedin: "LinkedIn 主页",
     twitter: "Twitter / X 主页",
     website: "个人网站",
+    calendly: "Calendly 预约链接",
     required: "必填字段",
   },
 };
@@ -113,6 +115,7 @@ export default function EditPage() {
     linkedin: "",
     twitter: "",
     website: "",
+    calendly: "",
   });
 
   useEffect(() => {
@@ -130,7 +133,7 @@ export default function EditPage() {
           return;
         }
         const links = (p.socialLinks && typeof p.socialLinks === "object" && !Array.isArray(p.socialLinks))
-          ? p.socialLinks as { linkedin?: string; twitter?: string; website?: string }
+          ? p.socialLinks as { linkedin?: string; twitter?: string; website?: string; calendly?: string }
           : {};
         setForm({
           displayName: p.displayName ?? "",
@@ -143,6 +146,7 @@ export default function EditPage() {
           linkedin: links.linkedin ?? "",
           twitter: links.twitter ?? "",
           website: links.website ?? "",
+          calendly: links.calendly ?? "",
         });
       })
       .finally(() => setLoading(false));
@@ -205,6 +209,7 @@ export default function EditPage() {
             linkedin: form.linkedin || undefined,
             twitter: form.twitter || undefined,
             website: form.website || undefined,
+            calendly: form.calendly || undefined,
           },
         }),
       });
@@ -425,6 +430,15 @@ export default function EditPage() {
                   value={form.website}
                   onChange={(e) => set("website", e.target.value)}
                   placeholder="https://yoursite.com"
+                  className={inputClass}
+                  type="url"
+                />
+              </Field>
+              <Field label={t.calendly}>
+                <input
+                  value={form.calendly}
+                  onChange={(e) => set("calendly", e.target.value)}
+                  placeholder="https://calendly.com/your-link"
                   className={inputClass}
                   type="url"
                 />

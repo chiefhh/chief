@@ -13,6 +13,9 @@ import {
   QrCode,
   Mail,
   X,
+  CreditCard,
+  FileDown,
+  CalendarDays,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
@@ -22,6 +25,7 @@ interface SocialLinks {
   linkedin?: string;
   twitter?: string;
   website?: string;
+  calendly?: string;
 }
 
 interface DecisionCase {
@@ -54,6 +58,7 @@ interface DoorplateClientProps {
   insights: Insight[];
   viewCount: number;
   connectionCount: number;
+  calendlyUrl?: string;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -293,6 +298,16 @@ function QRModal({ url, onClose }: { url: string; onClose: () => void }) {
         <p className="font-body text-xs mt-4" style={{ color: "rgba(232,226,216,0.4)" }}>
           {url}
         </p>
+        {qrDataUrl && (
+          <a
+            href={qrDataUrl}
+            download={`chief-qr.png`}
+            className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-full font-body text-xs font-medium transition-opacity hover:opacity-80"
+            style={{ background: "rgba(184,148,79,0.15)", color: "#B8944F", border: "1px solid rgba(184,148,79,0.25)" }}
+          >
+            Download PNG
+          </a>
+        )}
       </div>
     </div>
   );
@@ -386,6 +401,59 @@ function EmailSignatureModal({
 
 // ─── Share Toolbar ─────────────────────────────────────────────────────────────
 
+function downloadDigitalCard(name: string, title: string, company: string, slug: string) {
+  const W = 800, H = 450;
+  const canvas = document.createElement("canvas");
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext("2d")!;
+
+  // Background
+  ctx.fillStyle = "#0A0A0A";
+  ctx.fillRect(0, 0, W, H);
+
+  // Gold border
+  ctx.strokeStyle = "rgba(184,148,79,0.4)";
+  ctx.lineWidth = 1;
+  ctx.strokeRect(1, 1, W - 2, H - 2);
+
+  // Subtle gradient glow
+  const grad = ctx.createRadialGradient(W / 2, H * 0.3, 0, W / 2, H * 0.3, W * 0.6);
+  grad.addColorStop(0, "rgba(184,148,79,0.08)");
+  grad.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // chief.me label (top-left)
+  ctx.fillStyle = "rgba(184,148,79,0.7)";
+  ctx.font = "600 13px 'DM Sans', sans-serif";
+  ctx.fillText("chief.me", 48, 52);
+
+  // Name
+  ctx.fillStyle = "#FEFCF7";
+  ctx.font = "bold 44px 'Playfair Display', serif";
+  ctx.fillText(name, 48, 210);
+
+  // Title · Company
+  ctx.fillStyle = "rgba(232,226,216,0.6)";
+  ctx.font = "400 22px 'DM Sans', sans-serif";
+  ctx.fillText(`${title}  ·  ${company}`, 48, 258);
+
+  // Gold divider
+  ctx.fillStyle = "#B8944F";
+  ctx.fillRect(48, 295, 60, 2);
+
+  // URL
+  ctx.fillStyle = "rgba(184,148,79,0.8)";
+  ctx.font = "400 16px 'DM Sans', sans-serif";
+  ctx.fillText(`chief.me/${slug}`, 48, 330);
+
+  // Download
+  const link = document.createElement("a");
+  link.download = `${slug}-chief-card.png`;
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
+
 function ShareToolbar({
   slug,
   name,
@@ -452,6 +520,30 @@ function ShareToolbar({
         >
           <Mail className="w-3.5 h-3.5" />
           {dp.emailSignature}
+        </button>
+        <button
+          onClick={() => downloadDigitalCard(name, title, company, slug)}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-body text-xs transition-all hover:opacity-80"
+          style={{
+            background: "rgba(184,148,79,0.1)",
+            border: "1px solid rgba(184,148,79,0.2)",
+            color: "#B8944F",
+          }}
+        >
+          <CreditCard className="w-3.5 h-3.5" />
+          {dp.digitalCard ?? "Digital Card"}
+        </button>
+        <button
+          onClick={() => window.print()}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-body text-xs transition-all hover:opacity-80"
+          style={{
+            background: "rgba(184,148,79,0.1)",
+            border: "1px solid rgba(184,148,79,0.2)",
+            color: "#B8944F",
+          }}
+        >
+          <FileDown className="w-3.5 h-3.5" />
+          {dp.exportPdf ?? "Export PDF"}
         </button>
       </div>
 
@@ -762,6 +854,7 @@ export default function DoorplateClient({
   insights,
   viewCount,
   connectionCount,
+  calendlyUrl,
 }: DoorplateClientProps) {
   const { data: session } = useSession();
   const { t } = useLanguage();
@@ -872,13 +965,27 @@ export default function DoorplateClient({
         >
           {dp.contactPrivate}
         </p>
-        <button
-          onClick={() => setShowConnect(true)}
-          className="px-6 py-2.5 rounded-full font-body text-sm font-semibold transition-opacity hover:opacity-80"
-          style={{ background: "#B8944F", color: "#0A0A0A" }}
-        >
-          {dp.requestConnect}
-        </button>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <button
+            onClick={() => setShowConnect(true)}
+            className="w-full sm:w-auto px-6 py-2.5 rounded-full font-body text-sm font-semibold transition-opacity hover:opacity-80"
+            style={{ background: "#B8944F", color: "#0A0A0A" }}
+          >
+            {dp.requestConnect}
+          </button>
+          {calendlyUrl && (
+            <a
+              href={calendlyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-body text-sm font-semibold transition-opacity hover:opacity-80"
+              style={{ border: "1px solid rgba(184,148,79,0.4)", color: "#B8944F" }}
+            >
+              <CalendarDays className="w-4 h-4" />
+              {dp.bookMeeting ?? "Book a Meeting"}
+            </a>
+          )}
+        </div>
       </div>
 
       {/* Connect Modal */}

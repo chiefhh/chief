@@ -103,7 +103,7 @@ export default async function ProfilePage({ params }: Props) {
     profile.socialLinks &&
     typeof profile.socialLinks === "object" &&
     !Array.isArray(profile.socialLinks)
-      ? (profile.socialLinks as { linkedin?: string; twitter?: string; website?: string })
+      ? (profile.socialLinks as { linkedin?: string; twitter?: string; website?: string; calendly?: string })
       : {};
 
   const achievements: string[] = Array.isArray(profile.achievements)
@@ -310,6 +310,7 @@ export default async function ProfilePage({ params }: Props) {
               insights={insightsForClient}
               viewCount={profile.viewCount}
               connectionCount={profile.connectionCount}
+              calendlyUrl={socialLinks.calendly}
             />
           </div>
 

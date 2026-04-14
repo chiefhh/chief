@@ -172,10 +172,6 @@ export const translations = {
       profileViews: "Profile Views",
       pendingRequests: "Pending Requests",
       connections: "Connections",
-      inviteCode: "Your Invite Code",
-      inviteDesc: "Share with peers who deserve a seat",
-      copyCode: "Copy Code",
-      copied: "✓ Copied",
       foundingFine: "Founding Member · 10,000 seats · VP+ only · Free forever",
     },
 
@@ -205,6 +201,9 @@ export const translations = {
       noInsights: "No insights published yet.",
       noCases: "No cases shared yet.",
       achievements: "Achievements",
+      digitalCard: "Digital Card",
+      exportPdf: "Export PDF",
+      bookMeeting: "Book a Meeting",
     },
 
     // ── Footer ───────────────────────────────────────
@@ -398,10 +397,6 @@ export const translations = {
       profileViews: "主页浏览量",
       pendingRequests: "待处理请求",
       connections: "连接数",
-      inviteCode: "你的邀请码",
-      inviteDesc: "分享给值得拥有席位的同行",
-      copyCode: "复制邀请码",
-      copied: "✓ 已复制",
       foundingFine: "创始成员 · 10,000 席位 · 仅限 VP+ · 永久免费",
     },
 
@@ -431,6 +426,9 @@ export const translations = {
       noInsights: "暂无已发布的洞察。",
       noCases: "暂无已分享的案例。",
       achievements: "成就",
+      digitalCard: "数字名片",
+      exportPdf: "导出 PDF",
+      bookMeeting: "预约时间",
     },
 
     // ── Footer ───────────────────────────────────────

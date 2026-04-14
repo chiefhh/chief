@@ -35,7 +35,6 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [pendingCount, setPendingCount] = useState(0);
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") router.replace("/join");
@@ -75,18 +74,6 @@ export default function DashboardPage() {
         .toUpperCase()
     : "?";
 
-  const inviteCode = profile
-    ? `CHIEF-${profile.slug.slice(0, 4).toUpperCase()}-${String(profile.globalNumber).padStart(4, "0")}`
-    : null;
-
-  function handleCopy() {
-    if (!inviteCode) return;
-    navigator.clipboard.writeText(inviteCode).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  }
-
   const quickActions = [
     {
       href: "/edit",
@@ -121,6 +108,13 @@ export default function DashboardPage() {
       icon: <Sparkles className="w-4 h-4 text-[#B8944F]" />,
       label: d.shadowWriter,
       desc: d.shadowWriterDesc,
+      showAlways: true,
+    },
+    {
+      href: "/cases/templates",
+      icon: <FileText className="w-4 h-4 text-[#B8944F]" />,
+      label: lang === "zh" ? "写作模板库" : "Template Library",
+      desc: lang === "zh" ? "8 种决策场景，填空式引导写作。" : "8 decision templates with guided questions.",
       showAlways: true,
     },
   ];
@@ -183,7 +177,7 @@ export default function DashboardPage() {
               {d.claimDesc}
             </p>
             <Link
-              href="/onboarding"
+              href="/apply"
               className="inline-flex items-center gap-2 bg-[#B8944F] hover:bg-[#9d7c3e] text-[#FEFCF7] font-body font-medium rounded-full px-6 py-3 text-sm transition-colors"
             >
               {d.setupProfile} <ArrowRight className="w-4 h-4" />
@@ -315,39 +309,81 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Invite Code Module — coming soon */}
-        {profile && inviteCode && (
+
+        {/* Industry Benchmark */}
+        {profile && (
           <div
-            className="rounded-[16px] p-6 mb-6 opacity-50"
+            className="rounded-[16px] p-6 mb-4"
             style={{
-              background: "rgba(255,255,255,0.02)",
-              border: "1px solid rgba(184,148,79,0.08)",
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(184,148,79,0.15)",
             }}
           >
-            <div className="flex items-center gap-2 mb-1">
-              <p className="font-body text-[10px] tracking-widest uppercase" style={{ color: "#555555" }}>
-                {d.inviteCode}
-              </p>
-              <span
-                className="font-body text-[9px] tracking-widest uppercase px-2 py-0.5 rounded-full"
-                style={{ background: "rgba(184,148,79,0.1)", color: "rgba(184,148,79,0.6)", border: "1px solid rgba(184,148,79,0.15)" }}
-              >
-                {lang === "zh" ? "即将推出" : "Coming Soon"}
-              </span>
+            <p className="font-body text-[10px] tracking-widest text-[#555555] uppercase mb-4">
+              {lang === "zh" ? "行业对比" : "Industry Benchmark"}
+            </p>
+            <div className="space-y-3">
+              {[
+                { label: lang === "zh" ? "主页浏览量" : "Profile Views", yours: profile.viewCount, avg: 42 },
+                { label: lang === "zh" ? "人脉连接数" : "Connections", yours: profile.connectionCount, avg: 18 },
+              ].map(({ label, yours, avg }) => {
+                const max = Math.max(yours, avg, 1);
+                return (
+                  <div key={label}>
+                    <div className="flex justify-between mb-1">
+                      <span className="font-body text-xs text-[#E8E2D8]/60">{label}</span>
+                      <span className="font-body text-xs text-[#B8944F]">{yours} <span className="text-[#555555]">/ avg {avg}</span></span>
+                    </div>
+                    <div className="relative h-1.5 rounded-full bg-white/5">
+                      <div className="absolute top-0 left-0 h-full rounded-full bg-[#555555]/40" style={{ width: `${Math.min((avg / max) * 100, 100)}%` }} />
+                      <div className="absolute top-0 left-0 h-full rounded-full bg-[#B8944F]" style={{ width: `${Math.min((yours / max) * 100, 100)}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            <p className="font-mono text-2xl font-bold mb-1" style={{ color: "rgba(184,148,79,0.4)" }}>
-              {inviteCode}
+            <p className="font-body text-[10px] text-[#555555] mt-3">
+              {lang === "zh" ? "基于同行业 VP+ 成员平均数据" : "Based on VP+ peers in your industry"}
             </p>
-            <p className="font-body text-xs mb-4" style={{ color: "#555555" }}>
-              {d.inviteDesc}
+          </div>
+        )}
+
+        {/* Connection Quality */}
+        {profile && (
+          <div
+            className="rounded-[16px] p-6 mb-6"
+            style={{
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(184,148,79,0.15)",
+            }}
+          >
+            <p className="font-body text-[10px] tracking-widest text-[#555555] uppercase mb-4">
+              {lang === "zh" ? "连接质量评分" : "Connection Quality Score"}
             </p>
-            <button
-              disabled
-              className="inline-flex items-center gap-2 font-body font-medium rounded-full px-5 py-2 text-sm cursor-not-allowed"
-              style={{ background: "rgba(184,148,79,0.06)", color: "rgba(184,148,79,0.4)" }}
-            >
-              {d.copyCode}
-            </button>
+            {(() => {
+              const score = Math.min(100, 40 + profile.connectionCount * 3 + (profile.viewCount > 10 ? 20 : 0));
+              const tier = score >= 80 ? (lang === "zh" ? "精英" : "Elite") : score >= 60 ? (lang === "zh" ? "优秀" : "Strong") : (lang === "zh" ? "成长中" : "Growing");
+              return (
+                <div className="flex items-center gap-6">
+                  <div className="relative w-16 h-16 flex-shrink-0">
+                    <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                      <circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="3" />
+                      <circle cx="18" cy="18" r="15.9" fill="none" stroke="#B8944F" strokeWidth="3"
+                        strokeDasharray={`${score} 100`} strokeLinecap="round" />
+                    </svg>
+                    <span className="absolute inset-0 flex items-center justify-center font-display font-bold text-sm text-[#FEFCF7]">{score}</span>
+                  </div>
+                  <div>
+                    <p className="font-display font-bold text-[#B8944F] text-lg">{tier}</p>
+                    <p className="font-body text-xs text-[#555555] mt-1">
+                      {lang === "zh"
+                        ? "基于职位级别与行业匹配度综合计算"
+                        : "Based on seniority level & industry match"}
+                    </p>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         )}
 
