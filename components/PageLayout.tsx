@@ -4,8 +4,17 @@ import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
-export function PageLayout({ children, title }: { children: React.ReactNode; title: string }) {
+interface PageLayoutProps {
+  children: React.ReactNode;
+  title: string;
+  backHref?: string;
+  backLabel?: string;
+}
+
+export function PageLayout({ children, title, backHref, backLabel }: PageLayoutProps) {
   const { lang, toggle } = useLanguage();
+  const resolvedBackHref = backHref ?? "/";
+  const resolvedBackLabel = backLabel ?? (lang === "zh" ? "返回首页" : "Home");
   return (
     <div className="min-h-screen bg-[#FEFCF7]">
       {/* Nav */}
@@ -20,8 +29,8 @@ export function PageLayout({ children, title }: { children: React.ReactNode; tit
             <span className="opacity-30 mx-1">/</span>
             <span className={lang === "zh" ? "text-[#B8944F] font-medium" : ""}>中文</span>
           </button>
-          <Link href="/" className="flex items-center gap-1.5 font-body text-sm text-[#555555] hover:text-[#0A0A0A] transition-colors">
-            <ArrowLeft className="w-3.5 h-3.5" /> {lang === "zh" ? "返回首页" : "Home"}
+          <Link href={resolvedBackHref} className="flex items-center gap-1.5 font-body text-sm text-[#555555] hover:text-[#0A0A0A] transition-colors">
+            <ArrowLeft className="w-3.5 h-3.5" /> {resolvedBackLabel}
           </Link>
         </div>
       </nav>

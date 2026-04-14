@@ -12,15 +12,15 @@ const members = [
 ];
 
 const copy = {
-  en: { title: "Members", sub: "10,000 founding seats. VP+ verified.", join: "Join now" },
-  zh: { title: "成员目录", sub: "10,000 个创始席位，VP+ 认证。", join: "立即加入" },
+  en: { title: "Members", sub: "10,000 founding seats. VP+ verified.", join: "Join now", back: "Back to Dashboard" },
+  zh: { title: "成员目录", sub: "10,000 个创始席位，VP+ 认证。", join: "立即加入", back: "返回控制台" },
 };
 
 export default function MembersPage() {
   const { lang } = useLanguage();
   const t = copy[lang];
   return (
-    <PageLayout title={t.title}>
+    <PageLayout title={t.title} backHref="/dashboard" backLabel={t.back}>
       <p className="text-[#B8944F] text-sm tracking-wide">{t.sub}</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 !mt-8">
         {members.map(({ name, title, company, no, industry }) => (
