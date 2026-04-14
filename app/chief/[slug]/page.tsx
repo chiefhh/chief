@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Check, Shield } from "lucide-react";
 import DoorplateClient, { ShareToolbar } from "./DoorplateClient";
+import { DoorplateNav, FoundingMemberBadge, VPNetworkLabel } from "@/components/DoorplateNav";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -157,6 +158,9 @@ export default async function ProfilePage({ params }: Props) {
         />
 
         <div className="relative w-full max-w-xl mx-auto px-4 pb-16">
+          {/* ── BACK NAV ── */}
+          <DoorplateNav />
+
           {/* ── DARK HEADER CARD ── */}
           <div
             className="rounded-b-[24px] overflow-hidden"
@@ -183,7 +187,7 @@ export default async function ProfilePage({ params }: Props) {
                   className="font-body text-[10px] tracking-[0.3em] uppercase"
                   style={{ color: "#B8944F" }}
                 >
-                  Founding Member
+                  <FoundingMemberBadge />
                 </span>
                 <span
                   className="font-body text-[10px] tracking-[0.3em]"
@@ -348,7 +352,7 @@ export default async function ProfilePage({ params }: Props) {
                 className="font-body text-[10px] tracking-widest"
                 style={{ color: "rgba(232,226,216,0.3)" }}
               >
-                VP+ Network
+                <VPNetworkLabel />
               </span>
             </div>
           </div>
