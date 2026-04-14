@@ -80,8 +80,15 @@ export async function GET() {
       socialLinks: true,
       viewCount: true,
       connectionCount: true,
+      _count: {
+        select: {
+          insights: { where: { isDraft: false } },
+        },
+      },
     },
   });
 
-  return Response.json({ profile });
+  if (!profile) return Response.json({ profile: null });
+  const { _count, ...rest } = profile;
+  return Response.json({ profile: { ...rest, insightCount: _count.insights } });
 }
