@@ -1,10 +1,10 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, X as XIcon, Loader2 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
@@ -61,6 +61,11 @@ const copy = {
     twitter: "Twitter / X URL",
     website: "Personal Website",
     calendly: "Calendly URL",
+    exclusiveLink: "Exclusive Link",
+    exclusiveLinkHint: "3–30 chars · letters, numbers, hyphens only",
+    slugAvailable: "Available",
+    slugTaken: "Already taken",
+    slugInvalid: "Invalid format",
     required: "Required fields",
   },
   zh: {
@@ -86,6 +91,11 @@ const copy = {
     twitter: "Twitter / X 主页",
     website: "个人网站",
     calendly: "Calendly 预约链接",
+    exclusiveLink: "专属链接",
+    exclusiveLinkHint: "3–30 个字符 · 字母、数字、连字符",
+    slugAvailable: "可使用",
+    slugTaken: "已被占用",
+    slugInvalid: "格式不正确",
     required: "必填字段",
   },
 };
@@ -103,6 +113,9 @@ export default function EditPage() {
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const [error, setError] = useState("");
   const [generatingBio, setGeneratingBio] = useState(false);
+  const [originalSlug, setOriginalSlug] = useState("");
+  const [slugStatus, setSlugStatus] = useState<"idle" | "checking" | "available" | "taken" | "invalid">("idle");
+  const slugCheckTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [form, setForm] = useState({
     displayName: "",
@@ -116,6 +129,7 @@ export default function EditPage() {
     twitter: "",
     website: "",
     calendly: "",
+    slug: "",
   });
 
   useEffect(() => {
@@ -147,7 +161,9 @@ export default function EditPage() {
           twitter: links.twitter ?? "",
           website: links.website ?? "",
           calendly: links.calendly ?? "",
+          slug: p.slug ?? "",
         });
+        setOriginalSlug(p.slug ?? "");
       })
       .finally(() => setLoading(false));
   }, [status, router]);
@@ -167,6 +183,36 @@ export default function EditPage() {
     });
   }
 
+
+  const SLUG_REGEX = /^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$/;
+
+  function handleSlugChange(value: string) {
+    const lower = value.toLowerCase().replace(/[^a-z0-9-]/g, "");
+    set("slug", lower);
+
+    if (slugCheckTimerRef.current) clearTimeout(slugCheckTimerRef.current);
+
+    if (lower === originalSlug) {
+      setSlugStatus("available");
+      return;
+    }
+
+    if (!SLUG_REGEX.test(lower)) {
+      setSlugStatus(lower.length === 0 ? "idle" : "invalid");
+      return;
+    }
+
+    setSlugStatus("checking");
+    slugCheckTimerRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/profile/check-slug?slug=${encodeURIComponent(lower)}`);
+        const data = await res.json();
+        setSlugStatus(data.available ? "available" : "taken");
+      } catch {
+        setSlugStatus("idle");
+      }
+    }, 500);
+  }
   async function handleGenerateBio() {
     setGeneratingBio(true);
     try {
@@ -211,6 +257,7 @@ export default function EditPage() {
             website: form.website || undefined,
             calendly: form.calendly || undefined,
           },
+          ...(form.slug !== originalSlug ? { slug: form.slug } : {}),
         }),
       });
       const data = await res.json();
@@ -401,6 +448,51 @@ export default function EditPage() {
             </Field>
           </Section>
 
+          {/* Exclusive Link */}
+          <Section>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="font-body text-xs text-[#E8E2D8]/60 tracking-widest uppercase">
+                  {t.exclusiveLink}
+                </label>
+                {slugStatus === "available" && (
+                  <span className="flex items-center gap-1 font-body text-[10px] text-green-400">
+                    <Check className="w-3 h-3" /> {t.slugAvailable}
+                  </span>
+                )}
+                {slugStatus === "taken" && (
+                  <span className="flex items-center gap-1 font-body text-[10px] text-red-400">
+                    <XIcon className="w-3 h-3" /> {t.slugTaken}
+                  </span>
+                )}
+                {slugStatus === "invalid" && (
+                  <span className="flex items-center gap-1 font-body text-[10px] text-red-400">
+                    <XIcon className="w-3 h-3" /> {t.slugInvalid}
+                  </span>
+                )}
+                {slugStatus === "checking" && (
+                  <span className="flex items-center gap-1 font-body text-[10px] text-[#555555]">
+                    <Loader2 className="w-3 h-3 animate-spin" /> checking...
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center rounded-[12px] overflow-hidden"
+                style={{ border: "1px solid rgba(232,226,216,0.10)", background: "rgba(254,252,247,0.05)" }}>
+                <span className="px-4 py-3 font-body text-sm text-[#555555] border-r"
+                  style={{ borderColor: "rgba(232,226,216,0.10)", whiteSpace: "nowrap" }}>
+                  chief.me/
+                </span>
+                <input
+                  value={form.slug}
+                  onChange={(e) => handleSlugChange(e.target.value)}
+                  placeholder="your-name"
+                  className="flex-1 bg-transparent px-4 py-3 font-body text-[#FEFCF7] text-sm placeholder:text-[#555555] focus:outline-none"
+                />
+              </div>
+              <p className="font-body text-[10px] text-[#555555] mt-1.5">{t.exclusiveLinkHint}</p>
+            </div>
+          </Section>
+
           {/* Social Links */}
           <Section>
             <p className="font-body text-xs text-[#E8E2D8]/60 tracking-widest uppercase mb-4">
@@ -451,7 +543,7 @@ export default function EditPage() {
         <div className="mt-8 flex items-center gap-4">
           <button
             onClick={handleSave}
-            disabled={submitting || !form.displayName || !form.title || !form.company}
+            disabled={submitting || !form.displayName || !form.title || !form.company || slugStatus === "taken" || slugStatus === "invalid"}
             className="flex items-center gap-2 bg-[#B8944F] hover:bg-[#9d7c3e] disabled:opacity-40 disabled:cursor-not-allowed text-[#FEFCF7] font-body font-medium rounded-full px-8 py-3 text-sm transition-colors cursor-pointer"
           >
             {saveState === "saved" ? (
