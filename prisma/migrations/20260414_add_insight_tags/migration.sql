@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Insight" ADD COLUMN "tags" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];
