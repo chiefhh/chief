@@ -9,6 +9,7 @@ export const translations = {
       about: "About",
       faq: "FAQ",
       cta: "Claim your page",
+      dashboard: "Dashboard",
     },
 
     // ── Hero ─────────────────────────────────────────
@@ -237,6 +238,7 @@ export const translations = {
       about: "关于我们",
       faq: "常见问题",
       cta: "认领我的页面",
+      dashboard: "控制台",
     },
 
     // ── Hero ─────────────────────────────────────────
