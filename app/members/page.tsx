@@ -1,14 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-
-const INDUSTRIES = [
-  "Technology","Finance","Healthcare","Consulting","Manufacturing",
-  "Media & Entertainment","Retail & E-commerce","Energy","Real Estate",
-  "Education","Logistics","Telecommunications","Consumer Goods","Legal","Government",
-];
+import { INDUSTRIES, industryLabel } from "@/lib/industries";
 
 interface Member {
   displayName: string;
@@ -67,6 +63,12 @@ export default function MembersPage() {
 
   return (
     <PageLayout title={t.title} backHref="/dashboard" backLabel={t.back}>
+      <Link
+        href="/dashboard"
+        className="inline-flex items-center gap-1.5 font-body text-sm text-[#555555] hover:text-[#E8E2D8] transition-colors !-mt-6 !mb-2"
+      >
+        <ArrowLeft className="w-3.5 h-3.5" /> {t.back}
+      </Link>
       <p className="text-[#B8944F] text-sm tracking-wide">{t.sub}</p>
 
       {/* Filters */}
@@ -78,7 +80,7 @@ export default function MembersPage() {
         >
           <option value="">{t.allIndustries}</option>
           {INDUSTRIES.map((ind) => (
-            <option key={ind} value={ind}>{ind}</option>
+            <option key={ind} value={ind}>{industryLabel(ind, lang)}</option>
           ))}
         </select>
         <input
@@ -114,7 +116,7 @@ export default function MembersPage() {
               <div className="font-body text-[#555555] text-xs">{m.title} · {m.company}</div>
               {m.industries[0] && (
                 <span className="mt-2 inline-block font-body text-[9px] tracking-widest bg-[#B8944F]/10 text-[#B8944F] px-2 py-0.5 rounded-full">
-                  {m.industries[0]}
+                  {industryLabel(m.industries[0], lang)}
                 </span>
               )}
             </Link>

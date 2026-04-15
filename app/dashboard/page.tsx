@@ -86,8 +86,8 @@ export default function DashboardPage() {
     try {
       const res = await fetch("/api/wallet/google", { method: "POST" });
       const data = await res.json();
-      if (res.ok && data.saveUrl) {
-        window.open(data.saveUrl, "_blank");
+      if (res.ok && data.url) {
+        window.open(data.url, "_blank");
       }
     } catch {
       // silently fail

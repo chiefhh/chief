@@ -7,12 +7,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { ArrowLeft } from "lucide-react"
 import { useLanguage } from "@/lib/i18n/LanguageContext"
-
-const INDUSTRIES = [
-  "Technology","Finance","Healthcare","Consulting","Manufacturing",
-  "Media & Entertainment","Retail & E-commerce","Energy","Real Estate",
-  "Education","Logistics","Telecommunications","Consumer Goods","Legal","Government",
-]
+import { INDUSTRIES, industryLabel } from "@/lib/industries"
 
 const DRAFT_KEY = "insight_draft"
 
@@ -264,7 +259,7 @@ export default function NewInsightPage() {
                       border: selected ? "1px solid rgba(184,148,79,0.5)" : "1px solid rgba(255,255,255,0.08)",
                       color: selected ? "#B8944F" : "rgba(232,226,216,0.5)",
                     }}>
-                    {ind}
+                    {industryLabel(ind, lang)}
                   </button>
                 )
               })}

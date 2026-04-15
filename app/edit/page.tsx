@@ -6,26 +6,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Check, X as XIcon, Loader2 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { INDUSTRIES, industryLabel } from "@/lib/industries";
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
-
-const INDUSTRIES = [
-  "Technology",
-  "Finance",
-  "Healthcare",
-  "Consulting",
-  "Manufacturing",
-  "Media & Entertainment",
-  "Retail & E-commerce",
-  "Energy",
-  "Real Estate",
-  "Education",
-  "Logistics",
-  "Telecommunications",
-  "Consumer Goods",
-  "Legal",
-  "Government",
-];
 
 const COMPANY_SIZES = [
   { value: "UNKNOWN", labelEn: "Select...", labelZh: "请选择..." },
@@ -423,7 +406,7 @@ export default function EditPage() {
                       color: selected ? "#B8944F" : "rgba(232,226,216,0.5)",
                     }}
                   >
-                    {ind}
+                    {industryLabel(ind, lang)}
                   </button>
                 );
               })}

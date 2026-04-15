@@ -36,12 +36,12 @@ const stagger = { visible: { transition: { staggerChildren: 0.1 } } };
 const featureIcons = [Shield, Briefcase, Sparkles, BarChart3, Lock, CreditCard];
 
 const memberData = [
-  { name: "Sarah Chen",    title: "CTO",              company: "Luminex AI",     no: "No. 001", industry: "AI" },
-  { name: "David Park",    title: "VP Engineering",   company: "Streamline",     no: "No. 002", industry: "SaaS" },
-  { name: "Aisha Okafor",  title: "COO",              company: "NovaPay",        no: "No. 004", industry: "FinTech" },
-  { name: "Thomas Becker", title: "CMO",              company: "Orbis Media",    no: "No. 005", industry: "Media" },
-  { name: "Lin Xu",        title: "VP Product",       company: "Stellar Health", no: "No. 006", industry: "Health" },
-  { name: "Elena Vasquez", title: "CHRO",             company: "TerraBank",      no: "No. 008", industry: "Finance" },
+  { name: "Sarah Chen",    title: "CTO",              company: "Luminex AI",     no: "No. 001", industry: "AI",      industryZh: "人工智能" },
+  { name: "David Park",    title: "VP Engineering",   company: "Streamline",     no: "No. 002", industry: "SaaS",    industryZh: "SaaS" },
+  { name: "Aisha Okafor",  title: "COO",              company: "NovaPay",        no: "No. 004", industry: "FinTech", industryZh: "金融科技" },
+  { name: "Thomas Becker", title: "CMO",              company: "Orbis Media",    no: "No. 005", industry: "Media",   industryZh: "媒体" },
+  { name: "Lin Xu",        title: "VP Product",       company: "Stellar Health", no: "No. 006", industry: "Health",  industryZh: "医疗健康" },
+  { name: "Elena Vasquez", title: "CHRO",             company: "TerraBank",      no: "No. 008", industry: "Finance", industryZh: "金融" },
 ];
 
 /* ─── Lang Toggle ────────────────────────────────── */
@@ -409,7 +409,7 @@ function Testimonials() {
 
 /* ─── Members Wall ───────────────────────────────── */
 function MembersWall() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   return (
     <section className="bg-[#FEFCF7] py-28 px-6">
       <div className="max-w-6xl mx-auto">
@@ -429,7 +429,7 @@ function MembersWall() {
         <motion.div variants={stagger} whileInView="visible" initial="visible"
           viewport={{ once: true, amount: 0.1 }}
           className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
-          {memberData.map(({ name, title, company, no, industry }) => (
+          {memberData.map(({ name, title, company, no, industry, industryZh }) => (
             <motion.div key={name} variants={fadeUp} whileHover={{ y: -3 }}
               className="bg-[#F5F0E8] rounded-[16px] p-5 cursor-pointer transition-shadow duration-300">
               <div className="flex items-start justify-between mb-4">
@@ -442,7 +442,7 @@ function MembersWall() {
               <div className="font-body text-[#555555] text-xs mt-0.5">{title}</div>
               <div className="font-body text-[#555555] text-xs">{company}</div>
               <div className="mt-3">
-                <span className="font-body text-[9px] tracking-widest bg-[#B8944F]/10 text-[#B8944F] px-2 py-0.5 rounded-full">{industry}</span>
+                <span className="font-body text-[9px] tracking-widest bg-[#B8944F]/10 text-[#B8944F] px-2 py-0.5 rounded-full">{lang === "zh" ? industryZh : industry}</span>
               </div>
             </motion.div>
           ))}
