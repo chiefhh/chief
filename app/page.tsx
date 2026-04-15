@@ -15,6 +15,7 @@ import {
   Check,
   Globe,
   Users,
+  LayoutDashboard,
 } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
@@ -101,6 +102,13 @@ function Nav() {
               <span className="font-body text-xs text-[#0A0A0A] hidden md:block group-hover:text-[#B8944F] transition-colors">
                 {session.user.name?.split(" ")[0]}
               </span>
+            </Link>
+            <Link
+              href="/dashboard"
+              className="hidden md:flex items-center gap-1.5 font-body text-xs font-semibold text-[#B8944F] hover:text-[#D4AA6A] transition-colors"
+            >
+              <LayoutDashboard className="w-3.5 h-3.5" />
+              {t.nav.dashboard}
             </Link>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
