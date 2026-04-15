@@ -14,7 +14,9 @@ import {
   Briefcase,
   Sparkles,
   Wallet,
+  Check,
 } from "lucide-react";
+import { OnboardingTour } from "@/components/OnboardingTour";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface ProfileData {
@@ -24,8 +26,10 @@ interface ProfileData {
   title: string;
   company: string;
   headline: string | null;
+  bio: string | null;
   viewCount: number;
   connectionCount: number;
+  insightCount: number;
 }
 
 export default function DashboardPage() {
@@ -37,6 +41,7 @@ export default function DashboardPage() {
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [pendingCount, setPendingCount] = useState(0);
   const [walletLoading, setWalletLoading] = useState(false);
+  const [showTour, setShowTour] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") router.replace("/join");
@@ -56,6 +61,13 @@ export default function DashboardPage() {
       .then((r) => r.json())
       .then((data) => setPendingCount(data.count ?? 0))
       .catch(() => {});
+  }, [profile]);
+
+  useEffect(() => {
+    if (!profile) return;
+    if (!localStorage.getItem("chief_tour_seen")) {
+      setShowTour(true);
+    }
   }, [profile]);
 
   async function handleAddToWallet() {
@@ -152,6 +164,15 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-[#0A0A0A] px-6 py-12">
+      {showTour && profile && (
+        <OnboardingTour
+          slug={profile.slug}
+          onClose={() => {
+            localStorage.setItem("chief_tour_seen", "1");
+            setShowTour(false);
+          }}
+        />
+      )}
       <div
         className="fixed inset-0 pointer-events-none"
         style={{
@@ -439,6 +460,84 @@ export default function DashboardPage() {
             })()}
           </div>
         )}
+
+        {/* Score Improvement Checklist */}
+        {profile && (() => {
+          const items = [
+            {
+              done: !!profile.bio,
+              labelEn: "Add a bio",
+              labelZh: "添加简介",
+              pts: "+10",
+              href: "/edit",
+            },
+            {
+              done: profile.insightCount > 0,
+              labelEn: "Publish an insight",
+              labelZh: "发布洞察",
+              pts: "+15",
+              href: "/insights/new",
+            },
+            {
+              done: profile.connectionCount >= 3,
+              labelEn: "Connect with 3 peers",
+              labelZh: "建立 3 个连接",
+              pts: "+20",
+              href: null,
+            },
+            {
+              done: !!user?.image,
+              labelEn: "Add a profile photo",
+              labelZh: "完善头像",
+              pts: "+5",
+              href: null,
+            },
+          ];
+          const hasIncomplete = items.some((i) => !i.done);
+          if (!hasIncomplete) return null;
+          return (
+            <div
+              className="rounded-[16px] p-6 mb-6"
+              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(184,148,79,0.15)" }}
+            >
+              <p className="font-body text-[10px] tracking-widest text-[#555555] uppercase mb-4">
+                {lang === "zh" ? "提升评分" : "Improve Your Score"}
+              </p>
+              <div className="space-y-3">
+                {items.map((item) => (
+                  <div key={item.labelEn} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{
+                          border: item.done ? "none" : "1.5px solid rgba(184,148,79,0.4)",
+                          background: item.done ? "rgba(184,148,79,0.15)" : "transparent",
+                        }}
+                      >
+                        {item.done && <Check className="w-3 h-3 text-[#B8944F]" />}
+                      </div>
+                      {item.href && !item.done ? (
+                        <Link href={item.href} className="font-body text-sm text-[#E8E2D8]/70 hover:text-[#B8944F] transition-colors">
+                          {lang === "zh" ? item.labelZh : item.labelEn}
+                        </Link>
+                      ) : (
+                        <span className={`font-body text-sm ${item.done ? "text-[#555555] line-through" : "text-[#E8E2D8]/70"}`}>
+                          {lang === "zh" ? item.labelZh : item.labelEn}
+                        </span>
+                      )}
+                    </div>
+                    <span
+                      className="font-body text-xs font-medium"
+                      style={{ color: item.done ? "#555555" : "#B8944F" }}
+                    >
+                      {item.pts}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
 
         <p className="text-center font-body text-[#555555] text-xs mt-2">
           {d.foundingFine}
