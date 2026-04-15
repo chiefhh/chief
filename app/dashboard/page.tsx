@@ -17,6 +17,7 @@ import {
   Check,
 } from "lucide-react";
 import { OnboardingTour } from "@/components/OnboardingTour";
+import { ViewsSparkline } from "@/components/ViewsSparkline";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface ProfileData {
@@ -42,6 +43,7 @@ export default function DashboardPage() {
   const [pendingCount, setPendingCount] = useState(0);
   const [walletLoading, setWalletLoading] = useState(false);
   const [showTour, setShowTour] = useState(false);
+  const [viewsData, setViewsData] = useState<{ date: string; count: number }[]>([]);
 
   useEffect(() => {
     if (status === "unauthenticated") router.replace("/join");
@@ -60,6 +62,14 @@ export default function DashboardPage() {
     fetch("/api/connections/pending-count")
       .then((r) => r.json())
       .then((data) => setPendingCount(data.count ?? 0))
+      .catch(() => {});
+  }, [profile]);
+
+  useEffect(() => {
+    if (!profile) return;
+    fetch("/api/stats/views")
+      .then((r) => r.json())
+      .then((body) => setViewsData(body.data ?? []))
       .catch(() => {});
   }, [profile]);
 
@@ -343,43 +353,53 @@ export default function DashboardPage() {
         {/* Visitor Stats (only when profile exists) */}
         {profile && (
           <div
-            className="rounded-[16px] px-6 py-5 mb-6 grid grid-cols-3 gap-4"
+            className="rounded-[16px] px-6 py-5 mb-6"
             style={{
               background: "rgba(255,255,255,0.04)",
               border: "1px solid rgba(184,148,79,0.15)",
             }}
           >
-            <div className="text-center">
-              <p className="font-display text-2xl font-bold" style={{ color: "#FEFCF7" }}>
-                {profile.viewCount}
-              </p>
-              <p className="font-body text-xs mt-1" style={{ color: "#555555" }}>
-                {d.profileViews}
-              </p>
+            {/* 3-column counters */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center">
+                <p className="font-display text-2xl font-bold" style={{ color: "#FEFCF7" }}>
+                  {profile.viewCount}
+                </p>
+                <p className="font-body text-xs mt-1" style={{ color: "#555555" }}>
+                  {d.profileViews}
+                </p>
+              </div>
+              <Link
+                href="/connections"
+                className="text-center block group"
+                style={{
+                  borderLeft: "1px solid rgba(184,148,79,0.1)",
+                  borderRight: "1px solid rgba(184,148,79,0.1)",
+                }}
+              >
+                <p className="font-display text-2xl font-bold group-hover:text-[#B8944F] transition-colors" style={{ color: "#FEFCF7" }}>
+                  {pendingCount}
+                </p>
+                <p className="font-body text-xs mt-1" style={{ color: "#555555" }}>
+                  {d.pendingRequests}
+                </p>
+              </Link>
+              <div className="text-center">
+                <p className="font-display text-2xl font-bold" style={{ color: "#FEFCF7" }}>
+                  {profile.connectionCount}
+                </p>
+                <p className="font-body text-xs mt-1" style={{ color: "#555555" }}>
+                  {d.connections}
+                </p>
+              </div>
             </div>
-            <Link
-              href="/connections"
-              className="text-center block group"
-              style={{
-                borderLeft: "1px solid rgba(184,148,79,0.1)",
-                borderRight: "1px solid rgba(184,148,79,0.1)",
-              }}
-            >
-              <p className="font-display text-2xl font-bold group-hover:text-[#B8944F] transition-colors" style={{ color: "#FEFCF7" }}>
-                {pendingCount}
-              </p>
-              <p className="font-body text-xs mt-1" style={{ color: "#555555" }}>
-                {d.pendingRequests}
-              </p>
-            </Link>
-            <div className="text-center">
-              <p className="font-display text-2xl font-bold" style={{ color: "#FEFCF7" }}>
-                {profile.connectionCount}
-              </p>
-              <p className="font-body text-xs mt-1" style={{ color: "#555555" }}>
-                {d.connections}
-              </p>
-            </div>
+
+            {/* Sparkline */}
+            {viewsData.length > 0 && (
+              <div style={{ borderTop: "1px solid rgba(184,148,79,0.08)", marginTop: "12px" }}>
+                <ViewsSparkline data={viewsData} />
+              </div>
+            )}
           </div>
         )}
 
