@@ -33,7 +33,7 @@ export const translations = {
       steps: [
         {
           title: "Claim your page",
-          desc: "Enter your invitation code and sign in with Google. Your sequential member number is issued — permanently yours.",
+          desc: "Sign in with Google and fill in your role details. Your sequential member number is issued — permanently yours.",
         },
         {
           title: "Build your presence",
@@ -262,7 +262,7 @@ export const translations = {
       steps: [
         {
           title: "认领你的页面",
-          desc: "输入邀请码并使用 Google 账号登录。你的全球专属编号将永久归属于你。",
+          desc: "使用 Google 账号登录，填写你的职位信息。你的全球专属编号将永久归属于你。",
         },
         {
           title: "构建你的形象",

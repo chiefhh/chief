@@ -15,6 +15,8 @@ import {
   Sparkles,
   Wallet,
   Check,
+  BarChart3,
+  SlidersHorizontal,
 } from "lucide-react";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { ViewsSparkline } from "@/components/ViewsSparkline";
@@ -168,6 +170,20 @@ export default function DashboardPage() {
       icon: <Wallet className="w-4 h-4 text-[#B8944F]" />,
       label: d.walletCard,
       desc: d.walletCardDesc,
+      showAlways: !!profile,
+    },
+    {
+      href: "/analytics",
+      icon: <BarChart3 className="w-4 h-4 text-[#B8944F]" />,
+      label: lang === "zh" ? "访客分析" : "Analytics",
+      desc: lang === "zh" ? "查看详细的访客地区与设备数据。" : "Detailed visitor geography and device breakdown.",
+      showAlways: !!profile,
+    },
+    {
+      href: "/settings",
+      icon: <SlidersHorizontal className="w-4 h-4 text-[#B8944F]" />,
+      label: lang === "zh" ? "账号设置" : "Settings",
+      desc: lang === "zh" ? "隐私偏好、连接设置与账号管理。" : "Privacy, contact settings, and account management.",
       showAlways: !!profile,
     },
   ];
@@ -398,6 +414,15 @@ export default function DashboardPage() {
             {viewsData.length > 0 && (
               <div style={{ borderTop: "1px solid rgba(184,148,79,0.08)", marginTop: "12px" }}>
                 <ViewsSparkline data={viewsData} />
+                <div className="flex justify-end mt-2">
+                  <Link
+                    href="/analytics"
+                    className="font-body text-xs transition-colors hover:opacity-80"
+                    style={{ color: "rgba(184,148,79,0.6)" }}
+                  >
+                    {lang === "zh" ? "查看完整分析 →" : "View full analytics →"}
+                  </Link>
+                </div>
               </div>
             )}
           </div>

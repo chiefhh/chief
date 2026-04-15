@@ -35,17 +35,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       company: true,
       headline: true,
       bio: true,
+      user: { select: { image: true } },
     },
   });
   if (!profile) return { title: "Not Found" };
+
+  const description =
+    profile.headline ?? profile.bio?.slice(0, 160) ?? `${profile.title} at ${profile.company}`;
+  const ogImage = `https://chief.me/api/og/${slug}`;
+
   return {
     title: `${profile.displayName} | ${profile.title} @ ${profile.company} | Chief.me`,
-    description:
-      profile.headline ?? profile.bio?.slice(0, 160) ?? `${profile.title} at ${profile.company}`,
+    description,
     openGraph: {
       title: `${profile.displayName} — ${profile.title} @ ${profile.company}`,
-      images: [`/api/og/${slug}`],
+      description,
+      images: [ogImage],
       type: "profile",
+      url: `https://chief.me/chief/${slug}`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${profile.displayName} — ${profile.title} | Chief.me`,
+      description,
+      images: [ogImage],
     },
   };
 }
@@ -96,6 +109,21 @@ export default async function ProfilePage({ params }: Props) {
           createdAt: true,
         },
       },
+      endorsements: {
+        where: { isVerified: true },
+        orderBy: { createdAt: "desc" },
+        include: {
+          endorser: {
+            select: {
+              displayName: true,
+              title: true,
+              company: true,
+              slug: true,
+              globalNumber: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -132,13 +160,24 @@ export default async function ProfilePage({ params }: Props) {
     name: profile.displayName,
     jobTitle: profile.title,
     worksFor: { "@type": "Organization", name: profile.company },
-    url: `https://www.chief.me/chief/${slug}`,
+    url: `https://chief.me/chief/${slug}`,
+    image: profile.user.image ?? `https://chief.me/api/og/${slug}`,
+    description:
+      profile.headline ?? profile.bio?.slice(0, 160) ?? `${profile.title} at ${profile.company}`,
   };
 
   // Serialize insights dates for client
   const insightsForClient = profile.insights.map((i) => ({
     ...i,
     createdAt: i.createdAt.toISOString(),
+  }));
+
+  // Serialize endorsements for client
+  const endorsementsForClient = profile.endorsements.map((e) => ({
+    id: e.id,
+    content: e.content,
+    relationship: e.relationship,
+    endorser: e.endorser,
   }));
 
   return (
@@ -320,6 +359,8 @@ export default async function ProfilePage({ params }: Props) {
               viewCount={profile.viewCount}
               connectionCount={profile.connectionCount}
               calendlyUrl={socialLinks.calendly}
+              isOwner={isOwner}
+              endorsements={endorsementsForClient}
             />
           </div>
 

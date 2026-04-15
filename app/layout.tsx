@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, DM_Sans } from "next/font/google";
 import { LanguageProvider } from "@/lib/i18n/LanguageContext";
 import { Providers } from "@/components/Providers";
+import { PostHogProvider } from "@/components/providers/PostHogProvider";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -52,9 +53,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${playfair.variable} ${dmSans.variable}`}>
       <body className="min-h-screen antialiased">
-        <Providers>
-          <LanguageProvider>{children}</LanguageProvider>
-        </Providers>
+        <PostHogProvider>
+          <Providers>
+            <LanguageProvider>{children}</LanguageProvider>
+          </Providers>
+        </PostHogProvider>
       </body>
     </html>
   );

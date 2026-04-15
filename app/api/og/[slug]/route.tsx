@@ -1,147 +1,189 @@
 import { ImageResponse } from "@vercel/og";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
 
 export async function GET(
-  _req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params;
 
-  const profile = await prisma.profile.findUnique({
-    where: { slug },
-    select: {
-      displayName: true,
-      title: true,
-      company: true,
-      globalNumber: true,
-      headline: true,
-    },
-  });
+  try {
+    const profile = await prisma.profile.findUnique({
+      where: { slug },
+      select: {
+        displayName: true,
+        title: true,
+        company: true,
+        globalNumber: true,
+        headline: true,
+        user: { select: { image: true } },
+      },
+    });
 
-  if (!profile) {
-    return new Response("Not found", { status: 404 });
-  }
+    if (!profile) {
+      return new Response("Not found", { status: 404 });
+    }
 
-  const memberNo = `No. ${String(profile.globalNumber).padStart(3, "0")}`;
+    // Load fonts from public/fonts/ via the app origin
+    const baseUrl = req.nextUrl.origin;
+    const [fontData, dmSansData] = await Promise.all([
+      fetch(`${baseUrl}/fonts/PlayfairDisplay-Bold.ttf`).then((r) =>
+        r.arrayBuffer()
+      ),
+      fetch(`${baseUrl}/fonts/DMSans-Regular.ttf`).then((r) =>
+        r.arrayBuffer()
+      ),
+    ]);
 
-  return new ImageResponse(
-    (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          background: "#0A0A0A",
-          color: "#F5F0E8",
-          padding: "60px",
-          fontFamily: "serif",
-        }}
-      >
-        {/* Gold top line */}
+    const memberNo = `No. ${String(profile.globalNumber).padStart(3, "0")}`;
+
+    return new ImageResponse(
+      (
         <div
           style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: "4px",
-            background: "linear-gradient(90deg, transparent, #B8944F 30%, #E8D5A0 50%, #B8944F 70%, transparent)",
-          }}
-        />
-
-        {/* Top row */}
-        <div
-          style={{
+            width: "1200px",
+            height: "630px",
+            background: "#0A0A0A",
             display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
+            flexDirection: "column",
+            padding: "60px",
+            fontFamily: "DM Sans",
+            position: "relative",
           }}
         >
-          <span
+          {/* Gold top line */}
+          <div
             style={{
-              fontSize: "13px",
-              color: "#B8944F",
-              letterSpacing: "0.25em",
-              textTransform: "uppercase",
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: "3px",
+              background:
+                "linear-gradient(90deg, transparent, #B8944F 30%, #E8D5A0 50%, #B8944F 70%, transparent)",
             }}
-          >
-            FOUNDING MEMBER
-          </span>
-          <span style={{ fontSize: "13px", color: "#B8944F", letterSpacing: "0.2em" }}>
-            {memberNo}
-          </span>
-        </div>
+          />
 
-        {/* Main content */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          {/* Member number */}
           <div
             style={{
-              fontSize: "64px",
-              fontWeight: 700,
-              color: "#FEFCF7",
-              lineHeight: 1.1,
+              color: "#B8944F",
+              fontSize: "14px",
+              marginBottom: "40px",
+              letterSpacing: "0.25em",
+              display: "flex",
             }}
           >
-            {profile.displayName}
+            {memberNo}
           </div>
+
+          {/* Main content row */}
           <div
             style={{
-              fontSize: "26px",
-              color: "rgba(232,226,216,0.7)",
+              display: "flex",
+              alignItems: "center",
+              gap: "40px",
+              flex: 1,
             }}
           >
-            {profile.title} · {profile.company}
-          </div>
-          {profile.headline && (
+            {/* Avatar */}
+            {profile.user?.image && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={profile.user.image}
+                width={120}
+                height={120}
+                style={{
+                  borderRadius: "50%",
+                  border: "2px solid rgba(184,148,79,0.5)",
+                  display: "flex",
+                }}
+                alt=""
+              />
+            )}
+
+            {/* Text */}
             <div
               style={{
-                fontSize: "18px",
-                color: "rgba(232,226,216,0.5)",
-                fontStyle: "italic",
-                marginTop: "4px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "12px",
               }}
             >
-              &ldquo;{profile.headline}&rdquo;
+              <div
+                style={{
+                  color: "#FEFCF7",
+                  fontSize: "56px",
+                  fontFamily: "Playfair Display",
+                  fontWeight: 700,
+                  lineHeight: 1.1,
+                  display: "flex",
+                }}
+              >
+                {profile.displayName}
+              </div>
+              <div
+                style={{
+                  color: "#E8D5A0",
+                  fontSize: "24px",
+                  display: "flex",
+                }}
+              >
+                {profile.title} · {profile.company}
+              </div>
+              {profile.headline && (
+                <div
+                  style={{
+                    color: "rgba(232,226,216,0.5)",
+                    fontSize: "18px",
+                    maxWidth: "700px",
+                    fontStyle: "italic",
+                    display: "flex",
+                  }}
+                >
+                  &ldquo;{profile.headline}&rdquo;
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </div>
 
-        {/* Bottom row */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <span
+          {/* Bottom row */}
+          <div
             style={{
-              fontSize: "16px",
-              color: "rgba(232,226,216,0.4)",
-              letterSpacing: "0.05em",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
             }}
           >
-            chief.me/{slug}
-          </span>
-          <span
-            style={{
-              fontSize: "20px",
-              fontWeight: 700,
-              color: "#FEFCF7",
-            }}
-          >
-            chief<span style={{ color: "#B8944F" }}>.me</span>
-          </span>
+            <div style={{ color: "#B8944F", fontSize: "20px", display: "flex" }}>
+              chief.me/{slug}
+            </div>
+            <div
+              style={{
+                color: "rgba(232,226,216,0.3)",
+                fontSize: "16px",
+                display: "flex",
+              }}
+            >
+              Chief.me · VP+ Exclusive
+            </div>
+          </div>
         </div>
-      </div>
-    ),
-    {
-      width: 1200,
-      height: 630,
-    }
-  );
+      ),
+      {
+        width: 1200,
+        height: 630,
+        fonts: [
+          { name: "Playfair Display", data: fontData, weight: 700 },
+          { name: "DM Sans", data: dmSansData, weight: 400 },
+        ],
+      }
+    );
+  } catch (e) {
+    console.error("OG image error:", e);
+    return new Response("Error generating image", { status: 500 });
+  }
 }

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   ExternalLink,
   AtSign,
@@ -44,6 +45,19 @@ interface Insight {
   createdAt: string;
 }
 
+interface Endorsement {
+  id: string;
+  content: string;
+  relationship: string;
+  endorser: {
+    displayName: string;
+    title: string;
+    company: string;
+    slug: string;
+    globalNumber: number;
+  };
+}
+
 interface DoorplateClientProps {
   slug: string;
   profileId: string;
@@ -56,9 +70,11 @@ interface DoorplateClientProps {
   socialLinks: SocialLinks;
   cases: DecisionCase[];
   insights: Insight[];
+  endorsements?: Endorsement[];
   viewCount: number;
   connectionCount: number;
   calendlyUrl?: string;
+  isOwner?: boolean;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -568,6 +584,38 @@ function ShareToolbar({
           <FileDown className="w-3.5 h-3.5" />
           {dp.exportPdf ?? "Export PDF"}
         </button>
+        <a
+          href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-body text-xs transition-all hover:opacity-80"
+          style={{
+            background: "rgba(10,102,194,0.1)",
+            border: "1px solid rgba(10,102,194,0.25)",
+            color: "#0A66C2",
+          }}
+        >
+          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+          </svg>
+          LinkedIn
+        </a>
+        <a
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${name}'s digital doorplate on Chief.me`)}&url=${encodeURIComponent(url)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-body text-xs transition-all hover:opacity-80"
+          style={{
+            background: "rgba(0,0,0,0.15)",
+            border: "1px solid rgba(232,226,216,0.15)",
+            color: "rgba(232,226,216,0.7)",
+          }}
+        >
+          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+          X
+        </a>
       </div>
 
       {showQR && <QRModal url={url} onClose={() => setShowQR(false)} />}
@@ -875,21 +923,24 @@ export default function DoorplateClient({
   socialLinks,
   cases,
   insights,
+  endorsements = [],
   viewCount,
   connectionCount,
   calendlyUrl,
+  isOwner,
 }: DoorplateClientProps) {
   const { data: session } = useSession();
   const { t } = useLanguage();
   const dp = t.doorplate;
-  const [activeTab, setActiveTab] = useState<"about" | "cases" | "insights">("about");
+  const [activeTab, setActiveTab] = useState<"about" | "cases" | "insights" | "endorsements">("about");
   const [showConnect, setShowConnect] = useState(false);
   const isLoggedIn = !!session;
 
-  const tabs: { key: "about" | "cases" | "insights"; label: string }[] = [
+  const tabs: { key: "about" | "cases" | "insights" | "endorsements"; label: string }[] = [
     { key: "about", label: dp.about },
     { key: "cases", label: `${dp.cases}${cases.length > 0 ? ` (${cases.length})` : ""}` },
     { key: "insights", label: `${dp.insights}${insights.length > 0 ? ` (${insights.length})` : ""}` },
+    { key: "endorsements", label: `背书${endorsements.length > 0 ? ` (${endorsements.length})` : ""}` },
   ];
 
   return (
@@ -972,6 +1023,59 @@ export default function DoorplateClient({
         {activeTab === "insights" && (
           <InsightsTab insights={insights} isLoggedIn={isLoggedIn} />
         )}
+        {activeTab === "endorsements" && (
+          <div className="space-y-4 py-4">
+            {endorsements.length > 0 ? (
+              endorsements.map((e) => (
+                <div
+                  key={e.id}
+                  className="rounded-[14px] p-5"
+                  style={{
+                    background: "rgba(184,148,79,0.05)",
+                    border: "1px solid rgba(184,148,79,0.15)",
+                  }}
+                >
+                  <p
+                    className="font-body italic mb-3 text-sm leading-relaxed"
+                    style={{ color: "rgba(232,226,216,0.8)" }}
+                  >
+                    &ldquo;{e.content}&rdquo;
+                  </p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Link
+                      href={`/chief/${e.endorser.slug}`}
+                      className="font-body text-sm font-medium transition-colors hover:opacity-80"
+                      style={{ color: "#B8944F" }}
+                    >
+                      {e.endorser.displayName}
+                    </Link>
+                    <span
+                      className="font-body text-sm"
+                      style={{ color: "rgba(232,226,216,0.4)" }}
+                    >
+                      · {e.endorser.title} @ {e.endorser.company}
+                    </span>
+                  </div>
+                  {e.relationship && (
+                    <div
+                      className="font-body text-xs mt-1"
+                      style={{ color: "rgba(232,226,216,0.3)" }}
+                    >
+                      {e.relationship}
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <p
+                className="text-sm py-8 text-center font-body"
+                style={{ color: "rgba(232,226,216,0.3)" }}
+              >
+                暂无背书
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Contact Section */}
@@ -982,33 +1086,56 @@ export default function DoorplateClient({
           border: "1px solid rgba(184,148,79,0.15)",
         }}
       >
-        <p
-          className="font-body text-xs mb-4"
-          style={{ color: "rgba(232,226,216,0.4)" }}
-        >
-          {dp.contactPrivate}
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <button
-            onClick={() => setShowConnect(true)}
-            className="w-full sm:w-auto px-6 py-2.5 rounded-full font-body text-sm font-semibold transition-opacity hover:opacity-80"
-            style={{ background: "#B8944F", color: "#0A0A0A" }}
-          >
-            {dp.requestConnect}
-          </button>
-          {calendlyUrl && (
-            <a
-              href={calendlyUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-body text-sm font-semibold transition-opacity hover:opacity-80"
-              style={{ border: "1px solid rgba(184,148,79,0.4)", color: "#B8944F" }}
+        {isOwner ? (
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link href="/edit">
+              <button
+                className="w-full sm:w-auto px-6 py-2.5 rounded-full font-body text-sm font-semibold transition-opacity hover:opacity-80 cursor-pointer"
+                style={{ border: "1px solid #B8944F", color: "#B8944F" }}
+              >
+                编辑资料
+              </button>
+            </Link>
+            <Link href="/dashboard">
+              <button
+                className="w-full sm:w-auto px-6 py-2.5 rounded-full font-body text-sm font-semibold transition-opacity hover:opacity-80 cursor-pointer"
+                style={{ background: "rgba(255,255,255,0.06)", color: "rgba(232,226,216,0.7)" }}
+              >
+                控制台
+              </button>
+            </Link>
+          </div>
+        ) : (
+          <>
+            <p
+              className="font-body text-xs mb-4"
+              style={{ color: "rgba(232,226,216,0.4)" }}
             >
-              <CalendarDays className="w-4 h-4" />
-              {dp.bookMeeting ?? "Book a Meeting"}
-            </a>
-          )}
-        </div>
+              {dp.contactPrivate}
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button
+                onClick={() => setShowConnect(true)}
+                className="w-full sm:w-auto px-6 py-2.5 rounded-full font-body text-sm font-semibold transition-opacity hover:opacity-80 cursor-pointer"
+                style={{ background: "#B8944F", color: "#0A0A0A" }}
+              >
+                {dp.requestConnect}
+              </button>
+              {calendlyUrl && (
+                <a
+                  href={calendlyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-body text-sm font-semibold transition-opacity hover:opacity-80"
+                  style={{ border: "1px solid rgba(184,148,79,0.4)", color: "#B8944F" }}
+                >
+                  <CalendarDays className="w-4 h-4" />
+                  {dp.bookMeeting ?? "Book a Meeting"}
+                </a>
+              )}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Connect Modal */}
